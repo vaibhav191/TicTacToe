@@ -26,6 +26,8 @@ class Board {
         this.consumedYMoves = consumedYMoves
 
         // setting up players
+        // idea - create a player class, gets PlayersEnum
+        // Player class initialized by getting Board as a parameter, and then it can move
         
     }
 }
