@@ -1,6 +1,7 @@
 package com.example.tictactoe
 
 import android.content.Context
+import android.content.Intent
 import android.inputmethodservice.Keyboard.Row
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -42,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 
 class MainActivity : ComponentActivity() {
@@ -62,31 +66,64 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun main(modifier: Modifier) {
+fun main(modifier: Modifier, context: Context = LocalContext.current) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Ready for a Challenge?!")
-        // Slider
-        slider(Modifier)
-        Card(modifier = Modifier.fillMaxWidth()) {
+        // ready for a challenge
+        Column(modifier = Modifier
+            .weight(1f)
+            .fillMaxSize()
+            .padding(top = 100.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Text(
+                text = "Ready for a Challenge?!",
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                modifier = Modifier
+            )
+        }
+        //card for single player
+        Card(
+            modifier = Modifier
+                .padding(10.dp)
+                .weight(0.7f),
+            elevation = CardDefaults.cardElevation(),
+            shape = CardDefaults.elevatedShape,
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
+
+        ) {
             Column(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(onClick = { /*TODO*/ }) {
+                // Slider
+                slider(Modifier)
+                Button(onClick = {
+                    val gameintent = Intent(context, GameScreen::class.java)
+                    context.startActivity(gameintent)
+                }) {
                     Text(text = "Single Player")
-                }
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Multiplayer")
                 }
             }
         }
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "Records")
+        // card for multiplayer
+        Column(modifier = Modifier.weight(1f)) {
+            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+                Text(text = "Multiplayer")
+            }
+        }
+        // card for records
+        Column(modifier = Modifier.weight(0.5f)) {
+            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+                Text(text = "Records")
+            }
         }
     }
 }
@@ -133,7 +170,8 @@ fun slider(modifier: Modifier) {
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
+                ),
+
             steps = 1,
             valueRange = 0f..2f
         )
