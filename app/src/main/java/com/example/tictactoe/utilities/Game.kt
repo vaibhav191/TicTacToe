@@ -36,7 +36,6 @@ class Game(
 
         board.availableMoves.moves[moveIndex].state = StatesEnum.CONSUMED
         player.moveList.moves[moveIndex].state = StatesEnum.CONSUMED
-        this.checkWinner()
     }
 
     fun checkWinner(): GameResultEnum {
