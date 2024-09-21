@@ -21,6 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -88,6 +92,8 @@ fun Board(modifier: Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
+                var press by remember { mutableStateOf(false) }
+                var Firstpress by remember { mutableStateOf(true) }
                 Button(
                     onClick = { /*TODO*/ },
                     colors = ButtonDefaults.buttonColors(buttonColor),
@@ -117,7 +123,12 @@ fun Board(modifier: Modifier) {
                     Image(painter = painterResource(id = R.drawable.o), contentDescription = null)
                 }
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        if (Firstpress) {
+                            press = !press
+                            Firstpress = false
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(buttonColor),
                     modifier = Modifier
                         .fillMaxSize()
@@ -126,7 +137,12 @@ fun Board(modifier: Modifier) {
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
                     shape = RectangleShape
                 ) {
-
+                    if (press) {
+                        Image(
+                            painter = painterResource(id = R.drawable.cross),
+                            contentDescription = null
+                        )
+                    }
                 }
             }
 
