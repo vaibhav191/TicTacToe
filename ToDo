@@ -1,0 +1,73 @@
+Leader: Vaibhav Shrivastav
+Members:
+	- Ishita Sharma
+	- Soham Joshi
+	- Swayam Mehta
+	- Abheesht Roy
+	- Animesh
+
+Grading - 100 points max for main project for the entire team, with 25 extra credit.
+Project counts 20% of final grade, 5% is the extra credit.
+
+Language - Kotlin and Jetpack Compose Framework
+
+Requirements:
+- Screens:
+	- Game screen
+	- Settings screen
+	- Past Games screen
+		Ex - Date | Winner | Difficulty Mode
+- Github:
+	- Each student needs to create their own branch on github and merge with the main branch upon
+		completion of their work
+		https://www.conventionalcommits.org
+	- Readme file, detailing any necessary instructions to build and run the project
+- Youtube
+	- max 5 mins. Demo. Include link of video in project report.
+	- Should include a brief presentation (brief intro), no PPT required.
+- Team effectiveness Report
+	- Each team submits 1 page team effectiveness report in PDF format mentioning only the
+		contribution % of each team member (name, asu id, asu email)
+	- Every member must sign the report, electronic signatures are allowed.
+	- Assists in grading.
+- Project Report
+	- IEEE transactions template (https://journals.ieeeauthorcenter.ieee.org/create-your-ieee-journal-article/authoring-tools-and-templates/tools-for-ieee-authors/ieee-article-templates/)
+	- Tempalte selector -> Transactions -> Journals and Letters -> IEEE transactions on robots
+	- Not more than 4 pages
+		- abstract, intro and links: 0.5 pages
+		- technical approach (minimax and alpha-beta pruning): 1-1.5 pages
+		- design choices: 0.5 pages
+		- implications, limitations or challenges: 0.5 pages
+- Project Report and Team Effectiveness report must be submitted to gradescope as a single PDF file.
+	Only team leader submits. Do not include code in this report.
+
+Difficulties:
+	- Easy: AI takes random actions every time
+	- Medium: AI takes random actions 50% of the time and optimal 50% of the time
+	- Hard: AI takes optimal actions every time
+Note:
+	- Github requires version control with each student contributing
+
+To Do:
+	1. REPOSITORY CLEANING:
+		- Change the color of AI's mark (O)
+		- Repo description
+		- Readme: proper project description and usage instructions
+		- Comments - frequent, description and follow professional guidelines
+			https://stackoverflow.blog/2021/12/23/best-practices-for-writingcode-comments/
+		- Validate: Inability to tap on spaces where a move has already been placed
+
+	2. DATABASE	
+		- Past games: can scroll to older/recent games 
+	3. REPORT
+		- IEEE format as linked
+		- Explanation of Minimax algorithm
+		- Explanation of alpha-beta pruning
+	4. Bluetooth
+	5. Minimax implementation
+	6. Creating the 4 local game modes
+		- Local multiplayer (completed - class: TwoPlayerMode)
+		- vs AI
+			- Easy
+			- Medium
+			- Difficult
