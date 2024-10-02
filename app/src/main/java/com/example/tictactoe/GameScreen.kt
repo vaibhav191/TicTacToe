@@ -51,9 +51,14 @@ class GameScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Retrieve the difficulty level from the Intent
+        val difficulty = intent.getStringExtra("difficulty") ?: "Easy"
+
         setContent {
             TicTacToeTheme {
-                val game = TwoPlayerMode()
+                // Pass the difficulty level to TwoPlayerMode when initializing
+                val game = TwoPlayerMode(difficulty)
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = { topBar(Modifier) }) { innerPadding ->
@@ -68,7 +73,6 @@ class GameScreen : ComponentActivity() {
 fun Board(modifier: Modifier, game: TwoPlayerMode) {
     Column {
         Column(
-
             modifier = Modifier
                 .padding(top = 100.dp, start = 50.dp, end = 50.dp)
                 .fillMaxWidth(),
@@ -77,7 +81,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
         )
         {
             Text(
-                text = "Hard",
+                text = game.difficulty,
                 fontStyle = FontStyle.Italic,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.SemiBold
@@ -300,8 +304,8 @@ fun tile(
                     Text(message) },
                 confirmButton = {
                     Button(onClick = { showDialog.value = false
-                            val mainIntent = Intent(context, MainActivity::class.java)
-                            context.startActivity(mainIntent)
+                        val mainIntent = Intent(context, MainActivity::class.java)
+                        context.startActivity(mainIntent)
                     }) {
                         Text("OK")
                     }
