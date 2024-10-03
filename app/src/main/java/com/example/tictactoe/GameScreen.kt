@@ -47,6 +47,16 @@ import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.runners.TwoPlayerMode
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+
 
 
 class GameScreen : ComponentActivity() {
@@ -75,6 +85,8 @@ class GameScreen : ComponentActivity() {
 fun Board(modifier: Modifier, game: TwoPlayerMode) {
     // Shared game state that all tiles can observe and react to.
     val gameState = remember { mutableStateOf(GameResultEnum.NotOver) }
+    val isThinking = remember { mutableStateOf(false) }  // State to show thinking message
+    val winningLine = remember { mutableStateOf<List<Int>?>(null) }  // State to store winning line indices
 
     // States for each tile (one per cell)
     val buttonStates = remember { Array(9) { mutableStateOf<PlayersEnum?>(null) } }
@@ -95,7 +107,20 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                 fontWeight = FontWeight.SemiBold
             )
         }
-        Spacer(modifier = Modifier.height(50.dp))
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Show "AI is thinking" message when AI is making its move
+        if (isThinking.value) {
+            Text(
+                text = "AI is thinking...",
+                fontStyle = FontStyle.Italic,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }
 
         // Displaying the Tic Tac Toe board.
         Column(
@@ -122,7 +147,6 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                 Row(
                     modifier = Modifier
                         .weight(1f)
-                        .background(Color.Black)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -138,16 +162,30 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                             buttonElevation = buttonElevation,
                             buttonState = buttonStates[buttonIndex],  // Use shared button states
                             gameState = gameState,  // Pass the shared game state
-                            buttonStates = buttonStates  // Pass the buttonStates array
+                            buttonStates = buttonStates,  // Pass the buttonStates array
+                            isThinking = isThinking,  // Pass the isThinking state
+                            winningLine = winningLine  // Pass the winningLine state
                         )
                         buttonIndex++  // Increase index to track each tile separately
                     }
                 }
             }
+
+            // Draw the winning line over the board if the game is won
+            winningLine.value?.let { indices ->
+                DrawWinningLine(indices = indices)
+            }
+        }
+    }
+
+
+    // Monitor changes in the game state to update the winning line
+    androidx.compose.runtime.LaunchedEffect(gameState.value) {
+        if (gameState.value != GameResultEnum.NotOver) {
+            winningLine.value = game.getWinningLine()  // Get the winning combination
         }
     }
 }
-
 
 @Composable
 fun renderMark(playerType: PlayersEnum, modifier: Modifier = Modifier) {
@@ -171,6 +209,7 @@ fun renderMark(playerType: PlayersEnum, modifier: Modifier = Modifier) {
     }
 }
 
+
 @Composable
 fun tile(
     modifier: Modifier,
@@ -181,9 +220,14 @@ fun tile(
     buttonState: MutableState<PlayersEnum?>,
     gameState: MutableState<GameResultEnum>,
     buttonStates: Array<MutableState<PlayersEnum?>>,  // Add this parameter
+    isThinking: MutableState<Boolean>,  // Add state to track AI thinking
+    winningLine: MutableState<List<Int>?>,  // Track the winning line
     context: Context = LocalContext.current,
 ) {
     var showDialog = remember { mutableStateOf(false) }
+
+    // Create a coroutine scope for handling delay in onClick
+    val scope = rememberCoroutineScope()  // Remember a coroutine scope
 
     Button(
         onClick = {
@@ -194,22 +238,33 @@ fun tile(
 
                 // Check if the game is not over after player's move
                 if (gameState.value == GameResultEnum.NotOver) {
-                    // Let AI make its move
-                    game.makeAIMove()
+                    // Set thinking state to true before AI makes its move
+                    isThinking.value = true
 
-                    // Update button state to reflect AI's move in the UI
-                    val aiMove = game.lastAIMove
-                    if (aiMove != null) {
-                        val aiMoveIndex = aiMove.moveIndex
-                        buttonStates[aiMoveIndex].value = PlayersEnum.O
+                    // Use the coroutine scope to handle delay in the click handler
+                    scope.launch {
+                        kotlinx.coroutines.delay(1000)  // 2-second delay to simulate AI thinking
+
+                        // Let AI make its move
+                        game.makeAIMove()
+
+                        // Update button state to reflect AI's move in the UI
+                        val aiMove = game.lastAIMove
+                        if (aiMove != null) {
+                            val aiMoveIndex = aiMove.moveIndex
+                            buttonStates[aiMoveIndex].value = PlayersEnum.O
+                        }
+
+                        // Update game state after AI move
+                        gameState.value = game.checkWinner()
+
+                        // After AI move is complete, set thinking to false
+                        isThinking.value = false
                     }
-
-                    // Update game state after AI move
-                    gameState.value = game.checkWinner()
                 }
             }
         },
-        enabled = buttonState.value == null && game.turn_X,
+        enabled = buttonState.value == null && game.turn_X && !isThinking.value,  // Disable if AI is thinking
         colors = ButtonDefaults.buttonColors(
             containerColor = buttonColor,
             disabledContainerColor = buttonColor
@@ -261,3 +316,41 @@ fun tile(
         )
     }
 }
+
+@Composable
+fun DrawWinningLine(
+    indices: List<Int>, // The indices of the winning combination
+    modifier: Modifier = Modifier,
+    lineColor: Color = Color.Red // Set the color of the winning line
+) {
+    Canvas(modifier = modifier.fillMaxSize()) {
+        // Define the start and end positions based on the indices
+        val (startX, startY) = getOffsetForIndex(indices.first())
+        val (endX, endY) = getOffsetForIndex(indices.last())
+
+        // Draw a line to represent the winning combination
+        drawLine(
+            color = lineColor,
+            start = Offset(startX, startY),
+            end = Offset(endX, endY),
+            strokeWidth = 8f // Adjust stroke width as needed
+        )
+    }
+}
+
+// Helper function to get the Offset (X, Y) position for a given index
+fun getOffsetForIndex(index: Int): Pair<Float, Float> {
+    // Replace these with actual cell size and positions based on your board layout
+    val row = index / 3
+    val col = index % 3
+    val cellSize = 100f // Set to your board's cell size (modify as needed)
+
+    // Calculate the center of the cell for the given index
+    val x = col * cellSize + cellSize / 2
+    val y = row * cellSize + cellSize / 2
+
+    return Pair(x, y)
+}
+
+
+

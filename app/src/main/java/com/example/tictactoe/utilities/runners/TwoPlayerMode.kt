@@ -43,6 +43,10 @@ class TwoPlayerMode(val difficulty: String) {
         return game.checkWinner()
     }
 
+    fun getWinningLine(): List<Int>? {
+        return game.getWinningLine()
+    }
+
     // Function to select the correct AI difficulty strategy
     private fun selectDifficultyStrategy(difficulty: String): AIDifficulty {
         return when (difficulty) {

@@ -67,4 +67,20 @@ class Game(
             GameResultEnum.NotOver
         }
     }
+
+    fun getWinningLine(): List<Int>? {
+        val players = listOf(playerX, playerO)
+        for (player in players) {
+            for (condition in winConditions) {
+                // Check if this win condition is satisfied by the player
+                if (player.moveList.moves[condition[0]].state == StatesEnum.CONSUMED &&
+                    player.moveList.moves[condition[1]].state == StatesEnum.CONSUMED &&
+                    player.moveList.moves[condition[2]].state == StatesEnum.CONSUMED
+                ) {
+                    return condition // Return the indices that form the winning line
+                }
+            }
+        }
+        return null // Return null if no winning line is found
+    }
 }
