@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,10 +26,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,11 +40,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
+import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.runners.TwoPlayerMode
+
 
 class GameScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,15 +73,21 @@ class GameScreen : ComponentActivity() {
 
 @Composable
 fun Board(modifier: Modifier, game: TwoPlayerMode) {
+    // Shared game state that all tiles can observe and react to.
+    val gameState = remember { mutableStateOf(GameResultEnum.NotOver) }
+
+    // States for each tile (one per cell)
+    val buttonStates = remember { Array(9) { mutableStateOf<PlayersEnum?>(null) } }
+
     Column {
+        // Displaying the selected difficulty level.
         Column(
             modifier = Modifier
                 .padding(top = 100.dp, start = 50.dp, end = 50.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-        )
-        {
+        ) {
             Text(
                 text = game.difficulty,
                 fontStyle = FontStyle.Italic,
@@ -88,6 +96,8 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
             )
         }
         Spacer(modifier = Modifier.height(50.dp))
+
+        // Displaying the Tic Tac Toe board.
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,133 +109,40 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
         ) {
             val buttonColor = MaterialTheme.colorScheme.primaryContainer
             val buttonElevation = 10.dp
-            // top row
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.Black)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
 
-                tile(
-                    Modifier
-                        .weight(1f)
-                        .padding(end = 5.dp, bottom = 5.dp),
-                    game,
-                    MovesEnum.TOP_LEFT,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-                tile(
-                    Modifier
-                        .weight(1f)
-                        .padding(end = 5.dp, bottom = 5.dp),
-                    game,
-                    MovesEnum.TOP_CENTER,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-                tile(
-                    Modifier
-                        .weight(1f)
-                        .padding(bottom = 5.dp),
-                    game,
-                    MovesEnum.TOP_RIGHT,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-            }
-            // middle row
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.Black)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                tile(
-                    Modifier
-                        .weight(1f)
-                        .padding(end = 5.dp, bottom = 5.dp),
-                    game,
-                    MovesEnum.MIDDLE_LEFT,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-                tile(
-                    Modifier
-                        .weight(1f)
-                        .padding(end = 5.dp, bottom = 5.dp),
-                    game,
-                    MovesEnum.MIDDLE_CENTER,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-                tile(
-                    Modifier
-                        .weight(1f)
-                        .padding(bottom = 5.dp),
-                    game,
-                    MovesEnum.MIDDLE_RIGHT,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-            }
-            // bottom row
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.Black)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                tile(
+            // Create the rows and columns for the board.
+            val rows = listOf(
+                listOf(MovesEnum.TOP_LEFT, MovesEnum.TOP_CENTER, MovesEnum.TOP_RIGHT),
+                listOf(MovesEnum.MIDDLE_LEFT, MovesEnum.MIDDLE_CENTER, MovesEnum.MIDDLE_RIGHT),
+                listOf(MovesEnum.BOTTOM_LEFT, MovesEnum.BOTTOM_CENTER, MovesEnum.BOTTOM_RIGHT)
+            )
+
+            var buttonIndex = 0
+            rows.forEach { row ->
+                Row(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = 5.dp),
-                    game,
-                    MovesEnum.BOTTOM_LEFT,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-                tile(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 5.dp),
-                    game,
-                    MovesEnum.BOTTOM_CENTER,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
-                tile(
-                    modifier = Modifier.weight(1f),
-                    game,
-                    MovesEnum.BOTTOM_RIGHT,
-                    buttonColor,
-                    buttonElevation,
-                    remember { mutableStateOf<PlayersEnum?>(null) },
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
-                )
+                        .background(Color.Black)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    row.forEach { move ->
+                        tile(
+                            Modifier
+                                .weight(1f)
+                                .padding(5.dp),
+                            game = game,
+                            id = move,
+                            buttonColor = buttonColor,
+                            buttonElevation = buttonElevation,
+                            buttonState = buttonStates[buttonIndex],  // Use shared button states
+                            gameState = gameState,  // Pass the shared game state
+                            buttonStates = buttonStates  // Pass the buttonStates array
+                        )
+                        buttonIndex++  // Increase index to track each tile separately
+                    }
+                }
             }
         }
     }
@@ -233,19 +150,112 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
 
 
 @Composable
-fun renderMark(playerType: PlayersEnum, modifier: Modifier) {
-    if (playerType == PlayersEnum.X) {
+fun renderMark(playerType: PlayersEnum, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         Image(
-            painter = painterResource(id = R.drawable.cross),
-            contentDescription = null
-        )
-    } else {
-        Image(
-            painter = painterResource(id = R.drawable.o),
-            contentDescription = null
+            painter = painterResource(
+                id = when (playerType) {
+                    PlayersEnum.X -> R.drawable.cross
+                    PlayersEnum.O -> R.drawable.o
+                }
+            ),
+            contentDescription = playerType.name,
+            modifier = Modifier
+                .fillMaxSize(0.6f)  // Use 60% of the available space
+                .padding(4.dp),     // Add some padding
+            contentScale = ContentScale.Fit
         )
     }
 }
+
+//@Composable
+//fun tile(
+//    modifier: Modifier,
+//    game: TwoPlayerMode,
+//    id: MovesEnum,
+//    buttonColor: Color,
+//    buttonElevation: Dp,
+//    buttonState: MutableState<PlayersEnum?>,
+//    buttonStates: Array<MutableState<PlayersEnum?>>,  // Pass the array of button states
+//    gameState: MutableState<GameResultEnum>,  // Pass game state to observe changes
+//    context: Context = LocalContext.current,
+//) {
+//    var showDialog = remember { mutableStateOf(false) }
+//
+//    // Check and set the button state based on the game's move list
+//    if (game.board.availableMoves.moves[id.moveIndex].state == StatesEnum.CONSUMED) {
+//        // Set the state of this tile to X or O based on who occupied it
+//        buttonState.value = if (game.playerX.moveList.moves[id.moveIndex].state == StatesEnum.CONSUMED) {
+//            PlayersEnum.X
+//        } else {
+//            PlayersEnum.O
+//        }
+//    }
+//
+//    Button(
+//        onClick = {
+//            if (game.turn_X && buttonState.value == null) {
+//                // Player makes a move
+//                buttonState.value = PlayersEnum.X
+//                gameState.value = game.move(id)  // Player makes a move
+//
+//                // Check if the game is not over after player's move
+//                if (gameState.value == GameResultEnum.NotOver) {
+//                    // Let AI make its move
+//                    game.makeAIMove()
+//
+//                    // Update button state to reflect AI's move in the UI
+//                    val aiMove = game.lastAIMove
+//                    if (aiMove != null) {
+//                        val aiMoveIndex = aiMove.moveIndex
+//                        buttonStates[aiMoveIndex].value = PlayersEnum.O
+//                    }
+//
+//                    // Update game state after AI move
+//                    gameState.value = game.checkWinner()
+//                }
+//            }
+//        },
+//        enabled = game.turn_X && buttonState.value == null,  // Enable button if it's player's turn and cell is empty
+//        colors = ButtonDefaults.buttonColors(buttonColor),
+//        modifier = modifier
+//            .fillMaxSize(),
+//        elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
+//        shape = RectangleShape
+//    ) {
+//        // Display X or O based on the buttonState
+//        buttonState.value?.let { renderMark(it, Modifier) }
+//
+//        // Display game over dialog when the game ends
+//        if (showDialog.value) {
+//            AlertDialog(
+//                onDismissRequest = { showDialog.value = false },
+//                title = { Text("Game Over!") },
+//                text = {
+//                    val message = when (gameState.value) {
+//                        GameResultEnum.Win -> "Player X won!"
+//                        GameResultEnum.Lose -> "Player O won!"
+//                        GameResultEnum.Draw -> "It's a draw!"
+//                        else -> ""  // This should not happen
+//                    }
+//                    Text(message)
+//                },
+//                confirmButton = {
+//                    Button(onClick = {
+//                        showDialog.value = false
+//                        val mainIntent = Intent(context, MainActivity::class.java)
+//                        context.startActivity(mainIntent)
+//                    }) {
+//                        Text("OK")
+//                    }
+//                }
+//            )
+//        }
+//    }
+//}
 
 @Composable
 fun tile(
@@ -255,62 +265,85 @@ fun tile(
     buttonColor: Color,
     buttonElevation: Dp,
     buttonState: MutableState<PlayersEnum?>,
-    gameResult: MutableState<GameResultEnum>,
+    gameState: MutableState<GameResultEnum>,
+    buttonStates: Array<MutableState<PlayersEnum?>>,  // Add this parameter
     context: Context = LocalContext.current,
 ) {
-    var showDialog = remember { mutableStateOf<Boolean>(false) }
+    var showDialog = remember { mutableStateOf(false) }
+
     Button(
         onClick = {
-            if (game.turn_X){
+            if (game.turn_X && buttonState.value == null) {
+                // Player makes a move
                 buttonState.value = PlayersEnum.X
-            }
-            else{
-                buttonState.value = PlayersEnum.O
-            }
+                gameState.value = game.move(id)
 
+                // Check if the game is not over after player's move
+                if (gameState.value == GameResultEnum.NotOver) {
+                    // Let AI make its move
+                    game.makeAIMove()
+
+                    // Update button state to reflect AI's move in the UI
+                    val aiMove = game.lastAIMove
+                    if (aiMove != null) {
+                        val aiMoveIndex = aiMove.moveIndex
+                        buttonStates[aiMoveIndex].value = PlayersEnum.O
+                    }
+
+                    // Update game state after AI move
+                    gameState.value = game.checkWinner()
+                }
+            }
         },
-        colors = ButtonDefaults.buttonColors(buttonColor),
-        modifier = modifier
-            .fillMaxSize(),
+        enabled = buttonState.value == null && game.turn_X,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor,
+            disabledContainerColor = buttonColor
+        ),
+        modifier = modifier.fillMaxSize(),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
         shape = RectangleShape
     ) {
-        if(buttonState.value != null){
-            gameResult.value = game.move(id)
-            renderMark(buttonState.value!!, Modifier)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            buttonState.value?.let { playerType ->
+                renderMark(
+                    playerType = playerType,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
-        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw){
-            showDialog.value = true
-        }
-        if (showDialog.value){
-            AlertDialog(
-                onDismissRequest = { showDialog.value = false },
-                title = {
-                    Text("Game Over!") },
-                text = {
-                    val message = when (gameResult.value) {
-                        GameResultEnum.Win -> {
-                            "${game.playerX.playerName} won!"
-                        }
-                        GameResultEnum.Lose -> {
-                            "${game.playerO.playerName} won!"
-                        }
-                        GameResultEnum.Draw -> {
-                            "It's a draw!"
-                        }
+    }
 
-                        GameResultEnum.NotOver -> TODO()
-                    }
-                    Text(message) },
-                confirmButton = {
-                    Button(onClick = { showDialog.value = false
-                        val mainIntent = Intent(context, MainActivity::class.java)
-                        context.startActivity(mainIntent)
-                    }) {
-                        Text("OK")
-                    }
+    // Handle game over dialog
+    if (gameState.value != GameResultEnum.NotOver) {
+        showDialog.value = true
+    }
+
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = { Text("Game Over!") },
+            text = {
+                val message = when (gameState.value) {
+                    GameResultEnum.Win -> "Player X won!"
+                    GameResultEnum.Lose -> "Player O won!"
+                    GameResultEnum.Draw -> "It's a draw!"
+                    else -> ""
                 }
-            )
-        }
+                Text(message)
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showDialog.value = false
+                    val mainIntent = Intent(context, MainActivity::class.java)
+                    context.startActivity(mainIntent)
+                }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }

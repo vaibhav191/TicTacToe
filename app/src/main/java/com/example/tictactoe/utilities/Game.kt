@@ -28,7 +28,7 @@ class Game(
         }
         val player = if (playerXmove) playerX else playerO
 
-        val moveIndex = move.index
+        val moveIndex = move.moveIndex
         // check if move is available or already consumed, consumed moves cannot move again
         if (player.moveList.moves[moveIndex].state == StatesEnum.CONSUMED) {
             return

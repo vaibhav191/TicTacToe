@@ -24,6 +24,7 @@ class TwoPlayerMode(val difficulty: String) {
     // Array and map to hold available moves and their indices
     private var availableMovesArray: MutableList<MovesEnum> = mutableListOf()
     private var moveIndexMap: MutableMap<MovesEnum, Int> = mutableMapOf()
+    var lastAIMove: MovesEnum? = null
 
     init {
         initializeMoves()
@@ -35,6 +36,10 @@ class TwoPlayerMode(val difficulty: String) {
         for (i in availableMovesArray.indices) {
             moveIndexMap[availableMovesArray[i]] = i
         }
+    }
+
+    fun checkWinner(): GameResultEnum {
+        return game.checkWinner()
     }
 
     // Function to select the correct AI difficulty strategy
@@ -87,6 +92,7 @@ class TwoPlayerMode(val difficulty: String) {
 
             // Remove the AI's move from available moves as it's now occupied
             removeMove(aiMove)
+            lastAIMove = aiMove
 
             Log.d("GameFlow", "AI move completed. It's now player's turn")
         }

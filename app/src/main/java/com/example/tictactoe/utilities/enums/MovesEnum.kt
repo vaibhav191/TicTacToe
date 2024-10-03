@@ -1,6 +1,6 @@
 package com.example.tictactoe.utilities.enums
 
-enum class MovesEnum(val row: Int, val column: Int, val index: Int) {
+enum class MovesEnum(val row: Int, val column: Int, val moveIndex: Int) {
     TOP_LEFT(0, 0, 0),
     TOP_CENTER(0, 1, 1),
     TOP_RIGHT(0, 2, 2),
