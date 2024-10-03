@@ -39,18 +39,14 @@ class Game(
     }
 
     fun checkWinner(): GameResultEnum {
-        // check if no available move, draw
-        if (board.availableMoves.moves.none { it.state == StatesEnum.AVAILABLE }) {
-            return GameResultEnum.Draw
-        }
         // check if any player won
         val players = listOf(playerX, playerO)
         for (player in players) {
             for (condition in winConditions) {
                 // for each win condition check if all moves in the condition are consumed
                 if (player.moveList.moves[condition[0]].state == StatesEnum.CONSUMED &&
-                            player.moveList.moves[condition[1]].state == StatesEnum.CONSUMED &&
-                            player.moveList.moves[condition[2]].state == StatesEnum.CONSUMED)
+                    player.moveList.moves[condition[1]].state == StatesEnum.CONSUMED &&
+                    player.moveList.moves[condition[2]].state == StatesEnum.CONSUMED)
                 {
                     // check if player is X or O
                     if (player.playerType == PlayersEnum.X) {
@@ -63,7 +59,12 @@ class Game(
                 }
             }
         }
-        // if no player won, return not over
-        return GameResultEnum.NotOver
+
+        // If no player has won, check if no moves are available (i.e., a draw)
+        return if (board.availableMoves.moves.none { it.state == StatesEnum.AVAILABLE }) {
+            GameResultEnum.Draw
+        } else {
+            GameResultEnum.NotOver
+        }
     }
 }

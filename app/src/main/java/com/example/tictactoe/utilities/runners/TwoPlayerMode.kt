@@ -17,6 +17,7 @@ class TwoPlayerMode(val difficulty: String) {
     val board = Board()
     val game = Game(playerX, playerO, board)
     var turn_X = true // Track whose turn it is: true for X (Player), false for O (AI)
+    var aiMoveInProgress = false // NEW: Track if AI is in the middle of a move
 
     // Initialize the GameAI with the appropriate difficulty strategy
     private var gameAI: GameAI = GameAI(selectDifficultyStrategy(difficulty))
@@ -71,6 +72,11 @@ class TwoPlayerMode(val difficulty: String) {
             }
 
             // Make AI move after player move
+            if (!aiMoveInProgress) {  // NEW: Prevent concurrent AI moves
+                makeAIMove()
+            }
+
+            // Make AI move after player move
             makeAIMove()
         }
 
@@ -79,12 +85,33 @@ class TwoPlayerMode(val difficulty: String) {
 
     // Function to make a move using the AI based on the difficulty level
     fun makeAIMove() {
+        if (turn_X || aiMoveInProgress) {  // Prevent AI move if it's not its turn or already in progress
+            Log.d("GameFlow", "It's not AI's turn or AI is already making a move. Ignoring this move.")
+            return
+        }
+
         Log.d("GameFlow", "AI is making its move")
+        aiMoveInProgress = true  // NEW: Lock AI move
+
+        // Additional logging to track AI moves and available moves
+        Log.d("GameFlow", "Available Moves Before AI Move: $availableMovesArray")
+
+        // Prevent AI from making a move if it's not its turn.
+        if (turn_X) {
+            Log.d("GameFlow", "It's not AI's turn. Ignoring this move.")
+            return
+        }
 
         if (availableMovesArray.isNotEmpty()) {
             // Use the AI strategy to select a move
             val aiMove = gameAI.makeMove(availableMovesArray)
             Log.d("GameFlow", "AI chose move: $aiMove")
+
+            // Ensure AI doesn't play twice
+            if (lastAIMove == aiMove) {
+                Log.e("GameFlow", "AI is trying to repeat a move. Ignoring this move.")
+                return
+            }
 
             // Apply the move on the game board
             game.move(false, true, aiMove)  // AI makes its move
@@ -99,6 +126,9 @@ class TwoPlayerMode(val difficulty: String) {
         else {
             Log.d("GameFlow", "No available moves for AI to make")
         }
+
+        aiMoveInProgress = false  // NEW: Unlock AI move
+        Log.d("GameFlow", "Available Moves After AI Move: $availableMovesArray")
     }
 
     // Function to remove a move from the array and map in constant time
