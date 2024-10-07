@@ -38,6 +38,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,12 +63,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun main(modifier: Modifier, context: Context = LocalContext.current) {
+    // State variable for storing the selected difficulty level
+    var difficulty by remember { mutableStateOf("Easy") }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
-        // ready for a challenge
+        // Ready for a challenge text
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -72,7 +80,6 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Text(
                 text = "Ready for a Challenge?!",
                 fontWeight = FontWeight.Bold,
@@ -81,7 +88,7 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
             )
         }
 
-        //card for single player
+        // Card for single player
         Card(
             modifier = Modifier
                 .padding(10.dp)
@@ -89,30 +96,35 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
             elevation = CardDefaults.cardElevation(),
             shape = CardDefaults.elevatedShape,
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
-
         ) {
             Column(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Slider
-                slider(Modifier)
+                // Slider to select difficulty
+                slider(modifier) { selectedDifficulty ->
+                    difficulty = selectedDifficulty  // Update the difficulty state when slider changes
+                }
                 Button(onClick = {
-                    val gameintent = Intent(context, GameScreen::class.java)
-                    context.startActivity(gameintent)
+                    // Pass the selected difficulty to GameScreen
+                    val gameIntent = Intent(context, GameScreen::class.java)
+                    gameIntent.putExtra("difficulty", difficulty)  // Add the selected difficulty to the intent
+                    context.startActivity(gameIntent)
                 }) {
                     Text(text = "Single Player")
                 }
             }
         }
-        // card for multiplayer
+
+        // Card for multiplayer (Not implemented yet)
         Column(modifier = Modifier.weight(1f)) {
             Button(onClick = { /*TODO*/ }, modifier = Modifier) {
                 Text(text = "Multiplayer")
             }
         }
-        // card for records
+
+        // Card for records (Not implemented yet)
         Column(modifier = Modifier.weight(0.5f)) {
             Button(onClick = { /*TODO*/ }, modifier = Modifier) {
                 Text(text = "Records")
@@ -120,6 +132,7 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -153,18 +166,25 @@ fun topBar(modifier: Modifier) {
 }
 
 @Composable
-fun slider(modifier: Modifier) {
+fun slider(modifier: Modifier = Modifier, onDifficultySelected: (String) -> Unit) {
     var sliderPosition by remember { mutableFloatStateOf(0f) }
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
         Slider(
             value = sliderPosition,
-            onValueChange = { sliderPosition = it },
+            onValueChange = {
+                sliderPosition = it
+                val difficulty = when (sliderPosition.toInt()) {
+                    0 -> "Easy"
+                    1 -> "Medium"
+                    else -> "Hard"
+                }
+                onDifficultySelected(difficulty)  // Notify the parent composable of the difficulty change
+            },
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-
             steps = 1,
             valueRange = 0f..2f
         )
@@ -176,4 +196,5 @@ fun slider(modifier: Modifier) {
         Text(text = difficulty)
     }
 }
+
 
