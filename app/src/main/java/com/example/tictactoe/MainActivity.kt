@@ -54,6 +54,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    fun onMultiplayerButtonClicked() {
+        val intent = Intent(this, MultiplayerOptionsActivity::class.java)
+        startActivity(intent)
+    }
 }
 
 @Composable
@@ -108,7 +112,7 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         }
         // card for multiplayer
         Column(modifier = Modifier.weight(1f)) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+            Button(onClick = { (context as? MainActivity)?.onMultiplayerButtonClicked() }, modifier = Modifier) {
                 Text(text = "Multiplayer")
             }
         }
