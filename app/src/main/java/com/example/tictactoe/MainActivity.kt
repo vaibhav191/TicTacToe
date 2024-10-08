@@ -26,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,6 +39,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
+import com.example.tictactoe.utilities.enums.ModesEnum
+import com.example.tictactoe.utilities.enums.SinglePlayerModesEnum
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,19 +100,27 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
                 verticalArrangement = Arrangement.Center
             ) {
                 // Slider
-                slider(Modifier)
+                val difficulty = slider(Modifier)
                 Button(onClick = {
                     val gameintent = Intent(context, GameScreen::class.java)
+                    gameintent.putExtra("mode", ModesEnum.SinglePlayer)
+                    gameintent.putExtra("difficulty", difficulty)
                     context.startActivity(gameintent)
                 }) {
-                    Text(text = "Single Player")
+                    Text(text = "Single Player vs AI")
                 }
             }
         }
-        // card for multiplayer
+        // card for single screen multiplayer
         Column(modifier = Modifier.weight(1f)) {
             Button(onClick = { /*TODO*/ }, modifier = Modifier) {
-                Text(text = "Multiplayer")
+                Text(text = "Two Player Mode")
+            }
+        }
+        // card for multiplayer using bluetooth
+        Column(modifier = Modifier.weight(1f)) {
+            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+                Text(text = "Multiplayer Bluetooth")
             }
         }
         // card for records
@@ -153,7 +164,8 @@ fun topBar(modifier: Modifier) {
 }
 
 @Composable
-fun slider(modifier: Modifier) {
+fun slider(modifier: Modifier): SinglePlayerModesEnum {
+    var difficulty by remember { mutableStateOf(SinglePlayerModesEnum.Easy) }
     var sliderPosition by remember { mutableFloatStateOf(0f) }
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
         Slider(
@@ -168,12 +180,13 @@ fun slider(modifier: Modifier) {
             steps = 1,
             valueRange = 0f..2f
         )
-        val difficulty = when (sliderPosition.toInt()) {
-            0 -> "Easy"
-            1 -> "Medium"
-            else -> "Hard"
+        difficulty = when (sliderPosition.toInt()) {
+            0 -> SinglePlayerModesEnum.Easy
+            1 -> SinglePlayerModesEnum.Medium
+            else -> SinglePlayerModesEnum.Hard
         }
-        Text(text = difficulty)
+        Text(text = difficulty.toString())
     }
+    return difficulty
 }
 

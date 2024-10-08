@@ -52,6 +52,7 @@ class GameScreen : ComponentActivity() {
         setContent {
             TicTacToeTheme {
                 val game = TwoPlayerMode()
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = { topBar(Modifier) }) { innerPadding ->
