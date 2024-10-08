@@ -39,10 +39,6 @@ class Game(
     }
 
     fun checkWinner(): GameResultEnum {
-        """
-            if any player won, return win
-            if no available move and no player won, return draw
-        """.trimIndent()
         // check if any player won
         val players = listOf(playerX, playerO)
         for (player in players) {

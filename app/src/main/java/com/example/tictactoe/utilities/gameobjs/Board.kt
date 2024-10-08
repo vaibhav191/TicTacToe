@@ -5,9 +5,8 @@ import com.example.tictactoe.utilities.data.MoveStateData
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 
-class Board {
+class Board() {
     var availableMoves: MoveListData
-
     init {
         var availableMoves = MoveListData(
             mutableListOf(

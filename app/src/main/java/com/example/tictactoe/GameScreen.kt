@@ -3,6 +3,7 @@ package com.example.tictactoe
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -40,10 +41,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
+import com.example.tictactoe.utilities.abstracts.GameMode
+import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
 import com.example.tictactoe.utilities.enums.GameResultEnum
+import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
-import com.example.tictactoe.utilities.modes.TwoPlayerMode
+import com.example.tictactoe.utilities.gamemodes.LocalPlayervsPlayer
+import com.example.tictactoe.utilities.selector.GameModeSelector
 
 class GameScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,28 +56,17 @@ class GameScreen : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicTacToeTheme {
-                val mode = intent.getSerializableExtra("mode") as ModesEnum
-                val difficulty = intent.getSerializableExtra("difficulty") as SinglePlayerModesEnum
-                val game = when (mode) {
-                    ModesEnum.SinglePlayer -> {
-                        when (difficulty) {
-                            SinglePlayerModesEnum.Easy -> null
-                            SinglePlayerModesEnum.Medium -> null
-                            SinglePlayerModesEnum.Hard -> null
-                        }
-                    }
-                    else -> {
-                        when (difficulty) {
-                            TwoPlayerModesEnum.Local -> TwoPlayerMode()
-                            else -> null
-                        }
-                    }
-                }
-
+                val difficulty = intent.getIntExtra("Difficulty", 0)
+                val connection = intent.getIntExtra("Connection", 0)
+                Log.d("GameScreen", "difficulty: $difficulty")
+                Log.d("GameScreen", "connection: $connection")
+                val game = GameModeSelector(LocalDifficultyEnum.getDifficulty(difficulty)!!, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode()
+//                val game = LocalPlayervsPlayer()
+                Log.d("GameScreen", "game: $game")
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = { topBar(Modifier) }) { innerPadding ->
-                    Board(modifier = Modifier.padding(innerPadding), game)
+                    Board(modifier = Modifier.padding(innerPadding), game, LocalDifficultyEnum.getDifficulty(difficulty)!!, ConnectionTypeEnum.getConnectionType(connection)!!)
                 }
             }
         }
@@ -80,7 +74,7 @@ class GameScreen : ComponentActivity() {
 }
 
 @Composable
-fun Board(modifier: Modifier, game: TwoPlayerMode) {
+fun Board(modifier: Modifier, game: GameMode,difficulty: LocalDifficultyEnum, connection: ConnectionTypeEnum)  {
     Column {
         Column(
 
@@ -91,8 +85,16 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
             horizontalAlignment = Alignment.CenterHorizontally,
         )
         {
+            // show connection type
             Text(
-                text = "Hard",
+                text = connection.name,
+                fontStyle = FontStyle.Italic,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            // show difficulty
+            Text(
+                text = difficulty.name,
                 fontStyle = FontStyle.Italic,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.SemiBold
@@ -261,7 +263,7 @@ fun renderMark(playerType: PlayersEnum, modifier: Modifier) {
 @Composable
 fun tile(
     modifier: Modifier,
-    game: TwoPlayerMode,
+    game: GameMode,
     id: MovesEnum,
     buttonColor: Color,
     buttonElevation: Dp,
@@ -272,9 +274,10 @@ fun tile(
     var showDialog = remember { mutableStateOf<Boolean>(false) }
     Button(
         onClick = {
-            if (game.turn_X) {
+            if (game.turn_X){
                 buttonState.value = PlayersEnum.X
-            } else {
+            }
+            else{
                 buttonState.value = PlayersEnum.O
             }
 
@@ -285,42 +288,37 @@ fun tile(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
         shape = RectangleShape
     ) {
-        if (buttonState.value != null) {
+        if(buttonState.value != null){
             gameResult.value = game.move(id)
             renderMark(buttonState.value!!, Modifier)
         }
-        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
+        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw){
             showDialog.value = true
         }
-        if (showDialog.value) {
+        if (showDialog.value){
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
                 title = {
-                    Text("Game Over!")
-                },
+                    Text("Game Over!") },
                 text = {
                     val message = when (gameResult.value) {
                         GameResultEnum.Win -> {
                             "${game.playerX.playerName} won!"
                         }
-
                         GameResultEnum.Lose -> {
                             "${game.playerO.playerName} won!"
                         }
-
                         GameResultEnum.Draw -> {
                             "It's a draw!"
                         }
 
                         GameResultEnum.NotOver -> TODO()
                     }
-                    Text(message)
-                },
+                    Text(message) },
                 confirmButton = {
-                    Button(onClick = {
-                        showDialog.value = false
-                        val mainIntent = Intent(context, MainActivity::class.java)
-                        context.startActivity(mainIntent)
+                    Button(onClick = { showDialog.value = false
+                            val mainIntent = Intent(context, MainActivity::class.java)
+                            context.startActivity(mainIntent)
                     }) {
                         Text("OK")
                     }
