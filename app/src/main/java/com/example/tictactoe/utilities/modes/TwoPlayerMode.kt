@@ -1,8 +1,8 @@
-package com.example.tictactoe.utilities.runners
+package com.example.tictactoe.utilities.modes
 
-import com.example.tictactoe.utilities.Board
-import com.example.tictactoe.utilities.Game
-import com.example.tictactoe.utilities.PlayerInGame
+import com.example.tictactoe.utilities.gameobjs.Board
+import com.example.tictactoe.utilities.gameobjs.Game
+import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum

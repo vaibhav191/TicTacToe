@@ -1,4 +1,4 @@
-package com.example.tictactoe.utilities
+package com.example.tictactoe.utilities.gameobjs
 
 import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
@@ -39,10 +39,10 @@ class Game(
     }
 
     fun checkWinner(): GameResultEnum {
-        // check if no available move, draw
-        if (board.availableMoves.moves.none { it.state == StatesEnum.AVAILABLE }) {
-            return GameResultEnum.Draw
-        }
+        """
+            if any player won, return win
+            if no available move and no player won, return draw
+        """.trimIndent()
         // check if any player won
         val players = listOf(playerX, playerO)
         for (player in players) {
@@ -62,6 +62,10 @@ class Game(
                     }
                 }
             }
+        }
+        // check if no available move, draw
+        if (board.availableMoves.moves.none { it.state == StatesEnum.AVAILABLE }) {
+            return GameResultEnum.Draw
         }
         // if no player won, return not over
         return GameResultEnum.NotOver

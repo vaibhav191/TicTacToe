@@ -1,4 +1,4 @@
-package com.example.tictactoe.utilities
+package com.example.tictactoe.utilities.gameobjs
 
 import com.example.tictactoe.utilities.data.MoveListData
 import com.example.tictactoe.utilities.data.MoveStateData
