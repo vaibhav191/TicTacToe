@@ -3,8 +3,11 @@ package com.example.tictactoe.utilities.selector
 import com.example.tictactoe.utilities.abstracts.GameMode
 import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
 import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
+import com.example.tictactoe.utilities.gamemodes.BluetoothPlayervsPlayer
 import com.example.tictactoe.utilities.gamemodes.EasyMode
+import com.example.tictactoe.utilities.gamemodes.HardMode
 import com.example.tictactoe.utilities.gamemodes.LocalPlayervsPlayer
+import com.example.tictactoe.utilities.gamemodes.MediumMode
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
@@ -17,10 +20,10 @@ class GameModeSelector(val difficulty: LocalDifficultyEnum, val connection: Conn
                         return EasyMode()
                     }
                     LocalDifficultyEnum.Medium -> {
-                        return EasyMode()
+                        return MediumMode()
                     }
                     LocalDifficultyEnum.Hard -> {
-                        return EasyMode()
+                        return HardMode()
                     }
                     LocalDifficultyEnum.PlayervsPlayer -> {
                         return LocalPlayervsPlayer()
@@ -31,7 +34,7 @@ class GameModeSelector(val difficulty: LocalDifficultyEnum, val connection: Conn
                 }
             }
             ConnectionTypeEnum.Bluetooth -> {
-                return EasyMode()
+                return BluetoothPlayervsPlayer()
             }
             else -> {
                 throw Exception("Invalid connection")
