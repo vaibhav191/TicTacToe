@@ -3,6 +3,7 @@ package com.example.tictactoe
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,6 +25,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +40,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
+import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
+import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +85,7 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
             )
         }
 
+        val gameintent = Intent(context, GameScreen::class.java)
         //card for single player
         Card(
             modifier = Modifier
@@ -97,19 +102,48 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
                 verticalArrangement = Arrangement.Center
             ) {
                 // Slider
-                slider(Modifier)
+                var difficulty: Int = slider(Modifier, remember { mutableFloatStateOf(0f) })
+                val connection = ConnectionTypeEnum.Local
                 Button(onClick = {
-                    val gameintent = Intent(context, GameScreen::class.java)
+                    gameintent.putExtra("Connection", connection.value)
+                    Log.d("MainActivity", "connection: $connection")
+                    gameintent.putExtra("Difficulty", difficulty)
+                    Log.d("MainActivity", "difficulty: $difficulty")
+                    Log.d("MainActivity", "Starting game screen")
                     context.startActivity(gameintent)
                 }) {
                     Text(text = "Single Player")
                 }
             }
         }
+        // card for Local PlayervsPlayer
+        Column(modifier = Modifier.weight(1f)) {
+            Button(onClick = {
+               var difficulty = LocalDifficultyEnum.PlayervsPlayer
+               val connection = ConnectionTypeEnum.Local
+                Log.d("MainActivity", "connection: $connection")
+                Log.d("MainActivity", "difficulty: $difficulty")
+                gameintent.putExtra("Connection", connection.value)
+                gameintent.putExtra("Difficulty", difficulty.value)
+                Log.d("MainActivity", "Starting game screen")
+                context.startActivity(gameintent)
+            }, modifier = Modifier) {
+                Text(text = "Local PlayervsPlayer")
+            }
+        }
         // card for multiplayer
         Column(modifier = Modifier.weight(1f)) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
-                Text(text = "Multiplayer")
+            Button(onClick = {
+                val connection = ConnectionTypeEnum.Bluetooth
+                var difficulty = LocalDifficultyEnum.PlayervsPlayer
+                Log.d("MainActivity", "connection: $connection")
+                Log.d("MainActivity", "difficulty: $difficulty")
+                gameintent.putExtra("Connection", connection.value)
+                gameintent.putExtra("Difficulty", difficulty.value)
+                Log.d("MainActivity", "Starting game screen")
+                context.startActivity(gameintent)
+            }, modifier = Modifier) {
+                Text(text = "Multiplayer over Bluetooth")
             }
         }
         // card for records
@@ -153,12 +187,13 @@ fun topBar(modifier: Modifier) {
 }
 
 @Composable
-fun slider(modifier: Modifier) {
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+fun slider(modifier: Modifier, sliderPosition: MutableState<Float>): Int {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
+        val minSliderVal = LocalDifficultyEnum.Easy.value.toFloat()
+        val maxSliderVal = LocalDifficultyEnum.Hard.value.toFloat()
         Slider(
-            value = sliderPosition,
-            onValueChange = { sliderPosition = it },
+            value = sliderPosition.value,
+            onValueChange = { sliderPosition.value = it },
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
@@ -166,14 +201,12 @@ fun slider(modifier: Modifier) {
             ),
 
             steps = 1,
-            valueRange = 0f..2f
+            valueRange = minSliderVal..maxSliderVal
         )
-        val difficulty = when (sliderPosition.toInt()) {
-            0 -> "Easy"
-            1 -> "Medium"
-            else -> "Hard"
-        }
+        // slider value displaying text from local difficulty enum
+        val difficulty = LocalDifficultyEnum.getDifficulty(sliderPosition.value.toInt()).toString()
         Text(text = difficulty)
     }
+    return sliderPosition.value.toInt()
 }
 
