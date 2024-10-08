@@ -7,9 +7,10 @@ import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gameobjs.Board
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
+import com.example.tictactoe.utilities.interfaces.GameMode
 import com.example.tictactoe.utilities.randomselector.SelectRandom
 
-class EasyMode {
+class EasyMode(): GameMode() {
     val playerX = PlayerInGame("Player X", PlayersEnum.X)
     val playerO = PlayerInGame("Player O", PlayersEnum.O)
     val board = Board()

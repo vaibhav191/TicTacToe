@@ -1,6 +1,6 @@
 package com.example.tictactoe.utilities.enums
 
-enum class TwoPlayerModesEnum {
+enum class ConnectionTypeEnum {
     Local,
-    Bluetooth,
+    Bluetooth
 }

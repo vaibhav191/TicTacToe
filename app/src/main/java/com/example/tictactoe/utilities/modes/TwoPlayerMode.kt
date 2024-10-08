@@ -6,8 +6,9 @@ import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
+import com.example.tictactoe.utilities.interfaces.GameMode
 
-class TwoPlayerMode() {
+class TwoPlayerMode(): GameMode() {
     val playerX = PlayerInGame("Player X", PlayersEnum.X)
     val playerO = PlayerInGame("Player O", PlayersEnum.O)
     val board = Board()

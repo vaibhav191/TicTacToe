@@ -39,9 +39,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
-import com.example.tictactoe.utilities.enums.ModesEnum
-import com.example.tictactoe.utilities.enums.SinglePlayerModesEnum
-import com.example.tictactoe.utilities.enums.TwoPlayerModesEnum
+import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
+import com.example.tictactoe.utilities.enums.DifficultyEnum
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,8 +102,21 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
                 val difficulty = slider(Modifier)
                 Button(onClick = {
                     val gameintent = Intent(context, GameScreen::class.java)
-                    gameintent.putExtra("mode", ModesEnum.SinglePlayer)
-                    gameintent.putExtra("difficulty", difficulty)
+                    when (difficulty) {
+                        DifficultyEnum.Easy -> {
+                            gameintent.putExtra("Mode", DifficultyEnum.Easy)
+                        }
+
+                        DifficultyEnum.Medium -> {
+                            gameintent.putExtra("Mode", DifficultyEnum.Medium)
+                        }
+
+                        else -> {
+                            gameintent.putExtra("Mode", DifficultyEnum.Hard)
+                        }
+                    }
+
+                    gameintent.putExtra("Connection", ConnectionTypeEnum.Local)
                     context.startActivity(gameintent)
                 }) {
                     Text(text = "Single Player vs AI")
@@ -115,8 +127,8 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         Column(modifier = Modifier.weight(1f)) {
             Button(onClick = {
                 val gameintent = Intent(context, GameScreen::class.java)
-                gameintent.putExtra("mode", ModesEnum.MultiPlayer)
-                gameintent.putExtra("difficulty", TwoPlayerModesEnum.Local)
+                gameintent.putExtra("Connection", ConnectionTypeEnum.Local)
+                gameintent.putExtra("Mode", DifficultyEnum.PlayervsPlayer)
                 context.startActivity(gameintent)
             }, modifier = Modifier) {
                 Text(text = "Two Player Mode")
@@ -126,9 +138,8 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         Column(modifier = Modifier.weight(1f)) {
             Button(onClick = {
                 val gameintent = Intent(context, GameScreen::class.java)
-                gameintent.putExtra("mode", ModesEnum.MultiPlayer)
-                gameintent.putExtra("difficulty", TwoPlayerModesEnum.Bluetooth)
-                context.startActivity(gameintent)
+                gameintent.putExtra("Connection", ConnectionTypeEnum.Bluetooth)
+                gameintent.putExtra("Mode", DifficultyEnum.PlayervsPlayer)
             }, modifier = Modifier) {
                 Text(text = "Multiplayer Bluetooth")
             }
@@ -171,8 +182,8 @@ fun topBar(modifier: Modifier) {
 }
 
 @Composable
-fun slider(modifier: Modifier): SinglePlayerModesEnum {
-    var difficulty by remember { mutableStateOf(SinglePlayerModesEnum.Easy) }
+fun slider(modifier: Modifier): DifficultyEnum {
+    var difficulty by remember { mutableStateOf(DifficultyEnum.Easy) }
     var sliderPosition by remember { mutableFloatStateOf(0f) }
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
         Slider(
@@ -188,12 +199,11 @@ fun slider(modifier: Modifier): SinglePlayerModesEnum {
             valueRange = 0f..2f
         )
         difficulty = when (sliderPosition.toInt()) {
-            0 -> SinglePlayerModesEnum.Easy
-            1 -> SinglePlayerModesEnum.Medium
-            else -> SinglePlayerModesEnum.Hard
+            0 -> DifficultyEnum.Easy
+            1 -> DifficultyEnum.Medium
+            else -> DifficultyEnum.Hard
         }
         Text(text = difficulty.toString())
     }
     return difficulty
 }
-

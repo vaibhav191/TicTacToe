@@ -51,7 +51,23 @@ class GameScreen : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicTacToeTheme {
-                val game = TwoPlayerMode()
+                val mode = intent.getSerializableExtra("mode") as ModesEnum
+                val difficulty = intent.getSerializableExtra("difficulty") as SinglePlayerModesEnum
+                val game = when (mode) {
+                    ModesEnum.SinglePlayer -> {
+                        when (difficulty) {
+                            SinglePlayerModesEnum.Easy -> null
+                            SinglePlayerModesEnum.Medium -> null
+                            SinglePlayerModesEnum.Hard -> null
+                        }
+                    }
+                    else -> {
+                        when (difficulty) {
+                            TwoPlayerModesEnum.Local -> TwoPlayerMode()
+                            else -> null
+                        }
+                    }
+                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -256,10 +272,9 @@ fun tile(
     var showDialog = remember { mutableStateOf<Boolean>(false) }
     Button(
         onClick = {
-            if (game.turn_X){
+            if (game.turn_X) {
                 buttonState.value = PlayersEnum.X
-            }
-            else{
+            } else {
                 buttonState.value = PlayersEnum.O
             }
 
@@ -270,37 +285,42 @@ fun tile(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
         shape = RectangleShape
     ) {
-        if(buttonState.value != null){
+        if (buttonState.value != null) {
             gameResult.value = game.move(id)
             renderMark(buttonState.value!!, Modifier)
         }
-        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw){
+        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
             showDialog.value = true
         }
-        if (showDialog.value){
+        if (showDialog.value) {
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
                 title = {
-                    Text("Game Over!") },
+                    Text("Game Over!")
+                },
                 text = {
                     val message = when (gameResult.value) {
                         GameResultEnum.Win -> {
                             "${game.playerX.playerName} won!"
                         }
+
                         GameResultEnum.Lose -> {
                             "${game.playerO.playerName} won!"
                         }
+
                         GameResultEnum.Draw -> {
                             "It's a draw!"
                         }
 
                         GameResultEnum.NotOver -> TODO()
                     }
-                    Text(message) },
+                    Text(message)
+                },
                 confirmButton = {
-                    Button(onClick = { showDialog.value = false
-                            val mainIntent = Intent(context, MainActivity::class.java)
-                            context.startActivity(mainIntent)
+                    Button(onClick = {
+                        showDialog.value = false
+                        val mainIntent = Intent(context, MainActivity::class.java)
+                        context.startActivity(mainIntent)
                     }) {
                         Text("OK")
                     }
