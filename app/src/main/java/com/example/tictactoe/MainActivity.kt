@@ -86,6 +86,7 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         }
 
         val gameintent = Intent(context, GameScreen::class.java)
+        val gameintent2 = Intent(context, GameScreenDynamicModes::class.java)
         //card for single player
         Card(
             modifier = Modifier
@@ -106,11 +107,14 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
                 val connection = ConnectionTypeEnum.Local
                 Button(onClick = {
                     gameintent.putExtra("Connection", connection.value)
+                    gameintent2.putExtra("Connection", connection.value)
                     Log.d("MainActivity", "connection: $connection")
                     gameintent.putExtra("Difficulty", difficulty)
+                    gameintent2.putExtra("Difficulty", difficulty)
                     Log.d("MainActivity", "difficulty: $difficulty")
                     Log.d("MainActivity", "Starting game screen")
-                    context.startActivity(gameintent)
+//                    context.startActivity(gameintent)
+                    context.startActivity(gameintent2)
                 }) {
                     Text(text = "Single Player")
                 }
@@ -124,9 +128,12 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
                 Log.d("MainActivity", "connection: $connection")
                 Log.d("MainActivity", "difficulty: $difficulty")
                 gameintent.putExtra("Connection", connection.value)
+                gameintent2.putExtra("Connection", connection.value)
                 gameintent.putExtra("Difficulty", difficulty.value)
+                gameintent2.putExtra("Difficulty", difficulty.value)
                 Log.d("MainActivity", "Starting game screen")
-                context.startActivity(gameintent)
+//                context.startActivity(gameintent)
+                context.startActivity(gameintent2)
             }, modifier = Modifier) {
                 Text(text = "Local PlayervsPlayer")
             }
@@ -139,9 +146,12 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
                 Log.d("MainActivity", "connection: $connection")
                 Log.d("MainActivity", "difficulty: $difficulty")
                 gameintent.putExtra("Connection", connection.value)
+                gameintent2.putExtra("Connection", connection.value)
                 gameintent.putExtra("Difficulty", difficulty.value)
+                gameintent2.putExtra("Difficulty", difficulty.value)
                 Log.d("MainActivity", "Starting game screen")
-                context.startActivity(gameintent)
+//                context.startActivity(gameintent)
+                context.startActivity(gameintent2)
             }, modifier = Modifier) {
                 Text(text = "Multiplayer over Bluetooth")
             }
