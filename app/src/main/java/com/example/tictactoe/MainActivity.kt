@@ -209,4 +209,3 @@ fun slider(modifier: Modifier, sliderPosition: MutableState<Float>): Int {
     }
     return sliderPosition.value.toInt()
 }
-

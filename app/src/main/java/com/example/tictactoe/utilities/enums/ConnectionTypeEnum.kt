@@ -8,4 +8,3 @@ enum class ConnectionTypeEnum(val value: Int) {
             return entries.find { it.value == value }
         }
     }
-}
