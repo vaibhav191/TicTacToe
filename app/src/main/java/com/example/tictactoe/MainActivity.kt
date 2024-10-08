@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 import com.example.tictactoe.utilities.enums.ModesEnum
 import com.example.tictactoe.utilities.enums.SinglePlayerModesEnum
+import com.example.tictactoe.utilities.enums.TwoPlayerModesEnum
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +49,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicTacToeTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                Scaffold(modifier = Modifier.fillMaxSize(),
                     topBar = { topBar(Modifier) }) { innerPadding ->
                     main(modifier = Modifier.padding(innerPadding))
 
@@ -113,13 +113,23 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         }
         // card for single screen multiplayer
         Column(modifier = Modifier.weight(1f)) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+            Button(onClick = {
+                val gameintent = Intent(context, GameScreen::class.java)
+                gameintent.putExtra("mode", ModesEnum.MultiPlayer)
+                gameintent.putExtra("difficulty", TwoPlayerModesEnum.Local)
+                context.startActivity(gameintent)
+            }, modifier = Modifier) {
                 Text(text = "Two Player Mode")
             }
         }
         // card for multiplayer using bluetooth
         Column(modifier = Modifier.weight(1f)) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+            Button(onClick = {
+                val gameintent = Intent(context, GameScreen::class.java)
+                gameintent.putExtra("mode", ModesEnum.MultiPlayer)
+                gameintent.putExtra("difficulty", TwoPlayerModesEnum.Bluetooth)
+                context.startActivity(gameintent)
+            }, modifier = Modifier) {
                 Text(text = "Multiplayer Bluetooth")
             }
         }
@@ -135,32 +145,29 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun topBar(modifier: Modifier) {
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-        ),
-        title = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(1.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.tic_tac_toe),
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp),
-                )
-                Text(
-                    "marks the spot",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontStyle = FontStyle.Italic,
-                    textDecoration = TextDecoration.None,
-                    fontWeight = FontWeight.Light,
-                )
-            }
+    CenterAlignedTopAppBar(colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        titleContentColor = MaterialTheme.colorScheme.primary,
+    ), title = {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(1.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.tic_tac_toe),
+                contentDescription = null,
+                modifier = Modifier.size(30.dp),
+            )
+            Text(
+                "marks the spot",
+                style = MaterialTheme.typography.headlineSmall,
+                fontStyle = FontStyle.Italic,
+                textDecoration = TextDecoration.None,
+                fontWeight = FontWeight.Light,
+            )
         }
-    )
+    })
 }
 
 @Composable
