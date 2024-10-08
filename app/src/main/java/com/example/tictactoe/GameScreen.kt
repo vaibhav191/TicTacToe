@@ -2,10 +2,13 @@ package com.example.tictactoe
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,11 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,8 +48,18 @@ import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.runners.TwoPlayerMode
+import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
+import io.realm.kotlin.ext.query
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class GameScreen : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,7 +68,7 @@ class GameScreen : ComponentActivity() {
                 val game = TwoPlayerMode()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    topBar = { topBar(Modifier) }) { innerPadding ->
+                    topBar = { TopBar(Modifier) }) { innerPadding ->
                     Board(modifier = Modifier.padding(innerPadding), game)
                 }
             }
@@ -64,6 +76,7 @@ class GameScreen : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Board(modifier: Modifier, game: TwoPlayerMode) {
     Column {
@@ -105,7 +118,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
 
-                tile(
+                Tile(
                     Modifier
                         .weight(1f)
                         .padding(end = 5.dp, bottom = 5.dp),
@@ -116,7 +129,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                     remember { mutableStateOf<PlayersEnum?>(null) },
                     remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 )
-                tile(
+                Tile(
                     Modifier
                         .weight(1f)
                         .padding(end = 5.dp, bottom = 5.dp),
@@ -127,7 +140,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                     remember { mutableStateOf<PlayersEnum?>(null) },
                     remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 )
-                tile(
+                Tile(
                     Modifier
                         .weight(1f)
                         .padding(bottom = 5.dp),
@@ -148,7 +161,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                tile(
+                Tile(
                     Modifier
                         .weight(1f)
                         .padding(end = 5.dp, bottom = 5.dp),
@@ -159,7 +172,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                     remember { mutableStateOf<PlayersEnum?>(null) },
                     remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 )
-                tile(
+                Tile(
                     Modifier
                         .weight(1f)
                         .padding(end = 5.dp, bottom = 5.dp),
@@ -170,7 +183,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                     remember { mutableStateOf<PlayersEnum?>(null) },
                     remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 )
-                tile(
+                Tile(
                     Modifier
                         .weight(1f)
                         .padding(bottom = 5.dp),
@@ -191,7 +204,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                tile(
+                Tile(
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 5.dp),
@@ -202,7 +215,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                     remember { mutableStateOf<PlayersEnum?>(null) },
                     remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 )
-                tile(
+                Tile(
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 5.dp),
@@ -213,7 +226,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
                     remember { mutableStateOf<PlayersEnum?>(null) },
                     remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 )
-                tile(
+                Tile(
                     modifier = Modifier.weight(1f),
                     game,
                     MovesEnum.BOTTOM_RIGHT,
@@ -229,7 +242,7 @@ fun Board(modifier: Modifier, game: TwoPlayerMode) {
 
 
 @Composable
-fun renderMark(playerType: PlayersEnum, modifier: Modifier) {
+fun RenderMark(playerType: PlayersEnum, modifier: Modifier) {
     if (playerType == PlayersEnum.X) {
         Image(
             painter = painterResource(id = R.drawable.cross),
@@ -243,8 +256,9 @@ fun renderMark(playerType: PlayersEnum, modifier: Modifier) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun tile(
+fun Tile(
     modifier: Modifier,
     game: TwoPlayerMode,
     id: MovesEnum,
@@ -254,13 +268,13 @@ fun tile(
     gameResult: MutableState<GameResultEnum>,
     context: Context = LocalContext.current,
 ) {
-    var showDialog = remember { mutableStateOf<Boolean>(false) }
+    val showDialog = remember { mutableStateOf<Boolean>(false) }
+
     Button(
         onClick = {
-            if (game.turn_X){
+            if (game.turn_X) {
                 buttonState.value = PlayersEnum.X
-            }
-            else{
+            } else {
                 buttonState.value = PlayersEnum.O
             }
 
@@ -271,42 +285,149 @@ fun tile(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
         shape = RectangleShape
     ) {
-        if(buttonState.value != null){
+        if (buttonState.value != null) {
             gameResult.value = game.move(id)
-            renderMark(buttonState.value!!, Modifier)
+            RenderMark(buttonState.value!!, Modifier)
         }
-        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw){
+        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Loss || gameResult.value == GameResultEnum.Draw) {
             showDialog.value = true
         }
-        if (showDialog.value){
+        if (showDialog.value) {
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
                 title = {
-                    Text("Game Over!") },
+                    Text("Game Over!")
+                },
                 text = {
                     val message = when (gameResult.value) {
                         GameResultEnum.Win -> {
                             "${game.playerX.playerName} won!"
                         }
-                        GameResultEnum.Lose -> {
+
+                        GameResultEnum.Loss -> {
                             "${game.playerO.playerName} won!"
                         }
+
                         GameResultEnum.Draw -> {
                             "It's a draw!"
                         }
 
                         GameResultEnum.NotOver -> TODO()
                     }
-                    Text(message) },
+                    Text(message)
+                },
                 confirmButton = {
-                    Button(onClick = { showDialog.value = false
-                            val mainIntent = Intent(context, MainActivity::class.java)
-                            context.startActivity(mainIntent)
+                    Button(onClick = {
+                        showDialog.value = false
+                        val mainIntent = Intent(context, MainActivity::class.java)
+                        context.startActivity(mainIntent)
                     }) {
                         Text("OK")
                     }
                 }
             )
+
+            LaunchedEffect(gameResult.value) {
+                when (gameResult.value) {
+                    GameResultEnum.Win -> {
+                        saveGameResult(
+                            realm = Realm.open(RealmConfiguration.create(schema = setOf(GameHistory::class))),
+                            mode = "Two Player Mode",
+                            difficulty = null,
+                            opponent = "Guest",
+                            result = "Win"
+                        )
+                    }
+
+                    GameResultEnum.Loss -> {
+                        saveGameResult(
+                            realm = Realm.open(RealmConfiguration.create(schema = setOf(GameHistory::class))),
+                            mode = "Two Player Mode",
+                            difficulty = null,
+                            opponent = "Guest",
+                            result = "Loss"
+                        )
+                    }
+
+                    GameResultEnum.Draw -> {
+                        saveGameResult(
+                            realm = Realm.open(RealmConfiguration.create(schema = setOf(GameHistory::class))),
+                            mode = "Two Player Mode",
+                            difficulty = null,
+                            opponent = "Guest",
+                            result = "Draw"
+                        )
+                    }
+
+                    GameResultEnum.NotOver -> {}
+                }
+            }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+suspend fun saveGameResult(
+    realm: Realm,
+    mode: String,
+    difficulty: String?,
+    opponent: String,
+    result: String
+) {
+    withContext(Dispatchers.IO) {
+        realm.write {
+            // Query the maximum existing id
+            val maxId = this.query<GameHistory>().max("id", Long::class).find()
+            val newId = if (maxId != null) maxId + 1 else 1L
+
+            // Create a new game history entry
+            val newGame = GameHistory().apply {
+                id = newId
+                date = getDate()
+                time = getTime()
+                this.mode = mode
+                this.difficulty = difficulty
+                this.opponent = opponent
+                this.result = result
+            }
+
+            // Save the new game in Realm
+            copyToRealm(newGame)
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun getDate(): String {
+    val current = LocalDateTime.now()
+
+    val dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+    val formattedDate = current.format(dateFormatter)
+
+    Log.d("Date", "Current Date: $formattedDate")
+
+    return formattedDate
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun getTime(): String {
+    val current = LocalDateTime.now()
+
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    val formattedTime = current.format(timeFormatter)
+
+    Log.d("Time", "Current Time: $formattedTime")
+
+    return formattedTime
+}
+
+class GameHistory : RealmObject {
+    @PrimaryKey
+    var id: Long = 0
+    var date: String = "" // "MM/dd/yyyy" format
+    var time: String = "" // 24-hour format
+    var mode: String = "" // "Single" or "Multiplayer"
+    var difficulty: String? = null // For single player: "Easy", "Medium", "Hard"
+    var opponent: String = "" // "AI" or opponent's name
+    var result: String = "" // "Win", "Loss", "Draw"
 }

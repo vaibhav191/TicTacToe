@@ -21,6 +21,7 @@ class Game(
         listOf(0, 4, 8),
         listOf(2, 4, 6)
     )
+
     fun move(playerXmove: Boolean, playerOMove: Boolean, move: MovesEnum) {
         // check if only one player can move, only receive one true
         if (playerXmove and playerOMove) {
@@ -49,16 +50,15 @@ class Game(
             for (condition in winConditions) {
                 // for each win condition check if all moves in the condition are consumed
                 if (player.moveList.moves[condition[0]].state == StatesEnum.CONSUMED &&
-                            player.moveList.moves[condition[1]].state == StatesEnum.CONSUMED &&
-                            player.moveList.moves[condition[2]].state == StatesEnum.CONSUMED)
-                {
+                    player.moveList.moves[condition[1]].state == StatesEnum.CONSUMED &&
+                    player.moveList.moves[condition[2]].state == StatesEnum.CONSUMED
+                ) {
                     // check if player is X or O
                     if (player.playerType == PlayersEnum.X) {
                         // if player is X, return win
-                     return GameResultEnum.Win
-                    }
-                    else {
-                        return GameResultEnum.Lose
+                        return GameResultEnum.Win
+                    } else {
+                        return GameResultEnum.Loss
                     }
                 }
             }

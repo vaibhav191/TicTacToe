@@ -18,8 +18,7 @@ class TwoPlayerMode() {
         if (this.turn_X) {
             game.move(true, false, move)
             this.turn_X = false
-        }
-        else {
+        } else {
             game.move(false, true, move)
             this.turn_X = true
         }

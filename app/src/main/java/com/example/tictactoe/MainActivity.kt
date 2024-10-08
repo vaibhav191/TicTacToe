@@ -47,8 +47,8 @@ class MainActivity : ComponentActivity() {
             TicTacToeTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    topBar = { topBar(Modifier) }) { innerPadding ->
-                    main(modifier = Modifier.padding(innerPadding))
+                    topBar = { TopBar(Modifier) }) { innerPadding ->
+                    Main(modifier = Modifier.padding(innerPadding))
 
                 }
             }
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun main(modifier: Modifier, context: Context = LocalContext.current) {
+fun Main(modifier: Modifier, context: Context = LocalContext.current) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize(),
@@ -68,7 +68,8 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .padding(top = 100.dp),
+                .padding(
+                    top = 100.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -97,7 +98,7 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
                 verticalArrangement = Arrangement.Center
             ) {
                 // Slider
-                slider(Modifier)
+                Slider(Modifier)
                 Button(onClick = {
                     val gameintent = Intent(context, GameScreen::class.java)
                     context.startActivity(gameintent)
@@ -123,7 +124,7 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun topBar(modifier: Modifier) {
+fun TopBar(modifier: Modifier) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -153,7 +154,7 @@ fun topBar(modifier: Modifier) {
 }
 
 @Composable
-fun slider(modifier: Modifier) {
+fun Slider(modifier: Modifier) {
     var sliderPosition by remember { mutableFloatStateOf(0f) }
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
         Slider(
