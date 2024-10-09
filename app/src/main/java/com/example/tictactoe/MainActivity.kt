@@ -150,7 +150,10 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         }
         // card for records
         Column(modifier = Modifier.weight(0.5f)) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+            Button(onClick = {
+                val historyIntent = Intent(context, HistoryPage::class.java)
+                context.startActivity(historyIntent)
+            }, modifier = Modifier) {
                 Text(text = "Records")
             }
         }
