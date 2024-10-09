@@ -13,4 +13,5 @@ abstract class GameMode {
     val board = Board()
     abstract val game: Game
     abstract fun move(move: MovesEnum): GameResultEnum
+    abstract fun getMoveAI(): MovesEnum?
 }
