@@ -8,7 +8,7 @@ import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
-import com.example.tictactoe.utilities.selector.SelectRandom
+import com.example.tictactoe.utilities.selector.RandomSelector
 
 class MediumMode: GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)
@@ -47,7 +47,7 @@ class MediumMode: GameMode() {
         // if random then select a random move
         if (randomTurn) {
             this.randomTurn = !this.randomTurn
-            val move = SelectRandom.select(availableMoves.map { it.move })
+            val move = RandomSelector.select(availableMoves.map { it.move })
             Log.d("MediumMode", "random move: $move")
             return move
         }

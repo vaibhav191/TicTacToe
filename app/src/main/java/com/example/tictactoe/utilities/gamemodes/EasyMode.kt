@@ -8,7 +8,7 @@ import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
-import com.example.tictactoe.utilities.selector.SelectRandom
+import com.example.tictactoe.utilities.selector.RandomSelector
 
 class EasyMode : GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)
@@ -44,7 +44,7 @@ class EasyMode : GameMode() {
         Log.d("EasyMode", "moveAI")
         val availableMoves =
             game.board.availableMoves.moves.filter { it.state == StatesEnum.AVAILABLE }
-        val randomMove = SelectRandom.select(availableMoves.map { it.move })
+        val randomMove = RandomSelector.select(availableMoves.map { it.move })
         return randomMove
     }
 }
