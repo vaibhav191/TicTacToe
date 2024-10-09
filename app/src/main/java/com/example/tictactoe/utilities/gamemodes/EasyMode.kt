@@ -47,11 +47,11 @@ class EasyMode : GameMode() {
         return gameState
     }
 
-    fun moveAI() {
+    fun getMoveAI(): MovesEnum {
         Log.d("EasyMode", "moveAI")
         val availableMoves =
             game.board.availableMoves.moves.filter { it.state == StatesEnum.AVAILABLE }
         val randomMove = SelectRandom.select(availableMoves.map { it.move })
-        move(randomMove)
+        return randomMove
     }
 }
