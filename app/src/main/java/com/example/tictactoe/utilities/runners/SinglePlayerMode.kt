@@ -44,18 +44,15 @@ class SinglePlayerMode(val difficulty: String) {
 
     fun getBestMove(): MovesEnum {
         return when (difficulty) {
-            "Easy" -> {
-                // TODO: Implement easy mode (random moves)
-                getRandomMove()
-            }
+            "Easy" -> getRandomMove()
             "Medium" -> {
                 if (Random.nextBoolean()) {
                     getRandomMove()
                 } else {
-                    minimaxRoot(9) // Full depth for optimal moves 50% of the time
+                    minimaxRoot(true) // Use minimax with alpha-beta pruning for optimal moves
                 }
             }
-            "Hard" -> minimaxRoot(9) // Full depth for hard difficulty
+            "Hard" -> minimaxRoot(true) // Always use minimax with alpha-beta pruning
             else -> getRandomMove()
         }
     }
@@ -65,14 +62,14 @@ class SinglePlayerMode(val difficulty: String) {
         return availableMoves.random().move
     }
 
-    private fun minimaxRoot(depth: Int): MovesEnum {
+    private fun minimaxRoot(useAlphaBeta: Boolean): MovesEnum {
         val availableMoves = board.availableMoves.moves.filter { it.state == StatesEnum.AVAILABLE }
         var bestScore = Int.MIN_VALUE
         var bestMove = availableMoves[0].move
 
         for (moveState in availableMoves) {
             makeMove(moveState.move, PlayersEnum.O)
-            val score = minimax(depth - 1, false)
+            val score = minimax(Int.MIN_VALUE, Int.MAX_VALUE, false)
             undoMove(moveState.move)
 
             if (score > bestScore) {
@@ -84,9 +81,9 @@ class SinglePlayerMode(val difficulty: String) {
         return bestMove
     }
 
-    private fun minimax(depth: Int, isMaximizing: Boolean): Int {
+    private fun minimax(alpha: Int, beta: Int, isMaximizing: Boolean): Int {
         val gameState = game.checkWinner()
-        if (gameState != GameResultEnum.NotOver || depth == 0) {
+        if (gameState != GameResultEnum.NotOver) {
             return evaluateBoard(gameState)
         }
 
@@ -94,20 +91,26 @@ class SinglePlayerMode(val difficulty: String) {
 
         if (isMaximizing) {
             var bestScore = Int.MIN_VALUE
+            var currentAlpha = alpha
             for (moveState in availableMoves) {
                 makeMove(moveState.move, PlayersEnum.O)
-                val score = minimax(depth - 1, false)
+                val score = minimax(currentAlpha, beta, false)
                 undoMove(moveState.move)
                 bestScore = maxOf(bestScore, score)
+                if (bestScore >= beta) break // Beta cutoff
+                currentAlpha = maxOf(currentAlpha, bestScore)
             }
             return bestScore
         } else {
             var bestScore = Int.MAX_VALUE
+            var currentBeta = beta
             for (moveState in availableMoves) {
                 makeMove(moveState.move, PlayersEnum.X)
-                val score = minimax(depth - 1, true)
+                val score = minimax(alpha, currentBeta, true)
                 undoMove(moveState.move)
                 bestScore = minOf(bestScore, score)
+                if (bestScore <= alpha) break // Alpha cutoff
+                currentBeta = minOf(currentBeta, bestScore)
             }
             return bestScore
         }
