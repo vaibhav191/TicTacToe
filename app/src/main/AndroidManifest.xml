@@ -13,11 +13,6 @@
         android:theme="@style/Theme.TicTacToe"
         tools:targetApi="31">
         <activity
-            android:name=".GameScreen"
-            android:exported="false"
-            android:label="@string/title_activity_game_screen"
-            android:theme="@style/Theme.TicTacToe" />
-        <activity
             android:name=".GameScreenDynamicModes"
             android:exported="false"
             android:label="GameScreenDy"
