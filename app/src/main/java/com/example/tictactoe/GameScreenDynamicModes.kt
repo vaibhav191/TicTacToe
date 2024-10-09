@@ -75,6 +75,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                 ).getGameMode()
                 Log.d("GameScreen", "game: $game")
                 var buttonStates = remember {mutableStateListOf<PlayersEnum?>(null, null, null, null, null, null, null, null, null)}
+                var firstChangeStates = remember {mutableStateListOf<Boolean>(false, false, false, false, false, false, false, false, false)}
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = { topBar(Modifier) }) { innerPadding ->
@@ -83,7 +84,8 @@ class GameScreenDynamicModes : ComponentActivity() {
                         game,
                         LocalDifficultyEnum.getDifficulty(difficulty)!!,
                         ConnectionTypeEnum.getConnectionType(connection)!!,
-                        buttonStates
+                        buttonStates,
+                        firstChangeStates = firstChangeStates
                     )
                 }
             }
@@ -97,7 +99,8 @@ fun BoardDy(
     game: GameMode,
     difficulty: LocalDifficultyEnum,
     connection: ConnectionTypeEnum,
-    buttonStates: SnapshotStateList<PlayersEnum?>
+    buttonStates: SnapshotStateList<PlayersEnum?>,
+    firstChangeStates: SnapshotStateList<Boolean>
 ) {
     Column {
         Column(
@@ -179,7 +182,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[0]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
                 tileDy(
                     Modifier
@@ -191,7 +195,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[1]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
                 tileDy(
                     Modifier
@@ -203,7 +208,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[2]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
             }
             // middle row
@@ -225,7 +231,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[3]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
                 tileDy(
                     Modifier
@@ -237,7 +244,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[4]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
                 tileDy(
                     Modifier
@@ -249,7 +257,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[5]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
             }
             // bottom row
@@ -271,7 +280,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[6]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
                 tileDy(
                     modifier = Modifier
@@ -283,7 +293,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[7]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
                 tileDy(
                     modifier = Modifier.weight(1f),
@@ -293,7 +304,8 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[8]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
+                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    firstChangeStates = firstChangeStates
                 )
             }
         }
@@ -329,6 +341,7 @@ fun tileDy(
     buttonState: SnapshotStateList<PlayersEnum?>,
     gameResult: MutableState<GameResultEnum>,
     context: Context = LocalContext.current,
+    firstChangeStates: SnapshotStateList<Boolean>
 ) {
     var showDialog = remember { mutableStateOf<Boolean>(false) }
     Button(
@@ -345,8 +358,7 @@ fun tileDy(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
         shape = RectangleShape
     ) {
-        var firstChange = false
-        if (!firstChange && buttonState[id.ordinal] != null) {
+        if (!firstChangeStates[id.ordinal] && buttonState[id.ordinal] != null) {
             Log.d("GameScreen", "tileDy called with id: $id")
             Log.d("GameScreen", "buttonState is not null")
             gameResult.value = game.move(id)
@@ -354,8 +366,8 @@ fun tileDy(
             renderMarkDy(buttonState[id.ordinal]!!, Modifier)
 //            game.turn_X = !game.turn_X
             Log.d("GameScreen", "Flipped game.turn_X: ${game.turn_X}")
+            firstChangeStates[id.ordinal] = true
         }
-        firstChange = true
         if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
             showDialog.value = true
         }
