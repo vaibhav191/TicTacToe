@@ -76,6 +76,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                 Log.d("GameScreen", "game: $game")
                 var buttonStates = remember {mutableStateListOf<PlayersEnum?>(null, null, null, null, null, null, null, null, null)}
                 var firstChangeStates = remember {mutableStateListOf<Boolean>(false, false, false, false, false, false, false, false, false)}
+                var gameResult = remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = { topBar(Modifier) }) { innerPadding ->
@@ -85,8 +86,49 @@ class GameScreenDynamicModes : ComponentActivity() {
                         LocalDifficultyEnum.getDifficulty(difficulty)!!,
                         ConnectionTypeEnum.getConnectionType(connection)!!,
                         buttonStates,
-                        firstChangeStates = firstChangeStates
+                        firstChangeStates = firstChangeStates,
+                        gameResult = gameResult
                     )
+                    var showDialog = remember { mutableStateOf<Boolean>(false) }
+                    if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
+                        showDialog.value = true
+                    }
+                    if (showDialog.value) {
+                        AlertDialog(
+                            onDismissRequest = { showDialog.value = false },
+                            title = {
+                                Text("Game Over!")
+                            },
+                            text = {
+                                val message = when (gameResult.value) {
+                                    GameResultEnum.Win -> {
+                                        "${game.playerX.playerName} won!"
+                                    }
+
+                                    GameResultEnum.Lose -> {
+                                        "${game.playerO.playerName} won!"
+                                    }
+
+                                    GameResultEnum.Draw -> {
+                                        "It's a draw!"
+                                    }
+
+                                    GameResultEnum.NotOver -> TODO()
+                                }
+                                Text(message)
+                            },
+                            confirmButton = {
+                                Button(onClick = {
+                                    showDialog.value = false
+                                    val mainIntent = Intent(this, MainActivity::class.java)
+                                    this.startActivity(mainIntent)
+                                    (this as ComponentActivity).finish()
+                                }) {
+                                    Text("OK")
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -100,7 +142,8 @@ fun BoardDy(
     difficulty: LocalDifficultyEnum,
     connection: ConnectionTypeEnum,
     buttonStates: SnapshotStateList<PlayersEnum?>,
-    firstChangeStates: SnapshotStateList<Boolean>
+    firstChangeStates: SnapshotStateList<Boolean>,
+    gameResult: MutableState<GameResultEnum> = remember { mutableStateOf(GameResultEnum.NotOver) }
 ) {
     Column {
         Column(
@@ -142,10 +185,10 @@ fun BoardDy(
             // check if game is an instance of Easy mode, if so cast it to EasyMode
             val turnXState = remember { mutableStateOf(game.turn_X) }
             LaunchedEffect(turnXState.value) {
-                while (true) {
+                while (gameResult.value == GameResultEnum.NotOver) {
                     if (game is EasyMode || game is MediumMode || game is HardMode) {
                         Log.d("GameScreen", "Game is an instance of EasyMode or MediumMode or HardMode")
-                        if (!game.turn_X) {
+                        if (!game.turn_X && gameResult.value == GameResultEnum.NotOver) {
                             Log.d("GameScreen", "Game is O turn")
                             var game = game as EasyMode
                             val aiMove = game.getMoveAI()
@@ -158,7 +201,7 @@ fun BoardDy(
                             Log.d("GameScreen", "Game is X turn")
                         }
                     }
-                    delay(3000)
+                    delay(500)
                 }
             }
             Log.d("GameScreen", "Outside LaunchedEffect")
@@ -182,7 +225,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[0]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
                 tileDy(
@@ -195,7 +238,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[1]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
                 tileDy(
@@ -208,7 +251,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[2]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
             }
@@ -231,7 +274,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[3]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
                 tileDy(
@@ -244,7 +287,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[4]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
                 tileDy(
@@ -257,7 +300,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[5]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
             }
@@ -280,7 +323,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[6]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
                 tileDy(
@@ -293,7 +336,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[7]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
                 tileDy(
@@ -304,7 +347,7 @@ fun BoardDy(
                     buttonElevation,
 //                    buttonState = remember { mutableStateOf(buttonStates.value[8]) },
                     buttonState = buttonStates,
-                    remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) },
+                    gameResult = gameResult,
                     firstChangeStates = firstChangeStates
                 )
             }
@@ -341,7 +384,7 @@ fun tileDy(
     buttonState: SnapshotStateList<PlayersEnum?>,
     gameResult: MutableState<GameResultEnum>,
     context: Context = LocalContext.current,
-    firstChangeStates: SnapshotStateList<Boolean>
+    firstChangeStates: SnapshotStateList<Boolean>,
 ) {
     var showDialog = remember { mutableStateOf<Boolean>(false) }
     Button(
@@ -370,44 +413,6 @@ fun tileDy(
             Log.d("GameScreen", "gameResult: ${gameResult.value}")
             renderMarkDy(buttonState[id.ordinal]!!, Modifier)
             Log.d("GameScreen", "Flipped game.turn_X: ${game.turn_X}")
-        }
-        if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
-            showDialog.value = true
-        }
-        if (showDialog.value) {
-            AlertDialog(
-                onDismissRequest = { showDialog.value = false },
-                title = {
-                    Text("Game Over!")
-                },
-                text = {
-                    val message = when (gameResult.value) {
-                        GameResultEnum.Win -> {
-                            "${game.playerX.playerName} won!"
-                        }
-
-                        GameResultEnum.Lose -> {
-                            "${game.playerO.playerName} won!"
-                        }
-
-                        GameResultEnum.Draw -> {
-                            "It's a draw!"
-                        }
-
-                        GameResultEnum.NotOver -> TODO()
-                    }
-                    Text(message)
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        showDialog.value = false
-                        val mainIntent = Intent(context, MainActivity::class.java)
-                        context.startActivity(mainIntent)
-                    }) {
-                        Text("OK")
-                    }
-                }
-            )
         }
     }
 }
