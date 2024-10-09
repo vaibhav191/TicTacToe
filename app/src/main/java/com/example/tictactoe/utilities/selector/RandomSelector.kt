@@ -3,7 +3,7 @@ package com.example.tictactoe.utilities.selector
 import android.util.Log
 import com.example.tictactoe.utilities.enums.MovesEnum
 
-class SelectRandom {
+class RandomSelector {
     companion object {
         fun select(availableMoves: List<MovesEnum>): MovesEnum {
             Log.d("SelectRandom", "available moves: $availableMoves")
