@@ -9,7 +9,7 @@ import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
-class HardMode: GameMode() {
+class HardMode : GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)
     override val playerO = PlayerInGame("Player O", PlayersEnum.O)
     override val game = Game(playerX, playerO, board)
@@ -39,17 +39,19 @@ class HardMode: GameMode() {
         return gameState
 
     }
+
     override fun getMoveAI(): MovesEnum {
-        return minimaxRoot(9)
+        return minimaxRoot(true)
     }
-    private fun minimaxRoot(depth: Int): MovesEnum {
+
+    private fun minimaxRoot(useAlphaBeta: Boolean): MovesEnum {
         val availableMoves = board.availableMoves.moves.filter { it.state == StatesEnum.AVAILABLE }
         var bestScore = Int.MIN_VALUE
         var bestMove = availableMoves[0].move
 
         for (moveState in availableMoves) {
             makeMove(moveState.move, PlayersEnum.O)
-            val score = minimax(depth - 1, false)
+            val score = minimax(Int.MIN_VALUE, Int.MAX_VALUE, false)
             undoMove(moveState.move)
 
             if (score > bestScore) {
@@ -61,9 +63,9 @@ class HardMode: GameMode() {
         return bestMove
     }
 
-    private fun minimax(depth: Int, isMaximizing: Boolean): Int {
+    private fun minimax(alpha: Int, beta: Int, isMaximizing: Boolean): Int {
         val gameState = game.checkWinner()
-        if (gameState != GameResultEnum.NotOver || depth == 0) {
+        if (gameState != GameResultEnum.NotOver) {
             return evaluateBoard(gameState)
         }
 
@@ -71,20 +73,26 @@ class HardMode: GameMode() {
 
         if (isMaximizing) {
             var bestScore = Int.MIN_VALUE
+            var currentAlpha = alpha
             for (moveState in availableMoves) {
                 makeMove(moveState.move, PlayersEnum.O)
-                val score = minimax(depth - 1, false)
+                val score = minimax(currentAlpha, beta, false)
                 undoMove(moveState.move)
                 bestScore = maxOf(bestScore, score)
+                if (bestScore >= beta) break // Beta cutoff
+                currentAlpha = maxOf(currentAlpha, bestScore)
             }
             return bestScore
         } else {
             var bestScore = Int.MAX_VALUE
+            var currentBeta = beta
             for (moveState in availableMoves) {
                 makeMove(moveState.move, PlayersEnum.X)
-                val score = minimax(depth - 1, true)
+                val score = minimax(alpha, currentBeta, true)
                 undoMove(moveState.move)
                 bestScore = minOf(bestScore, score)
+                if (bestScore <= alpha) break // Alpha cutoff
+                currentBeta = minOf(currentBeta, bestScore)
             }
             return bestScore
         }
