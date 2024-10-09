@@ -2,6 +2,7 @@ package com.example.tictactoe.utilities.gamemodes
 
 import android.util.Log
 import com.example.tictactoe.utilities.abstracts.GameMode
+import com.example.tictactoe.utilities.data.MoveStateData
 import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
@@ -52,14 +53,13 @@ class MediumMode: GameMode() {
             return move
         }
         // if not random, then select the best move
-        val move = minimaxRoot(9)
+        val move = minimaxRoot(9, availableMoves)
         Log.d("MediumMode", "best move: $move")
         this.randomTurn = !this.randomTurn
         return move
     }
 
-    private fun minimaxRoot(depth: Int): MovesEnum {
-        val availableMoves = board.availableMoves.moves.filter { it.state == StatesEnum.AVAILABLE }
+    private fun minimaxRoot(depth: Int, availableMoves: List<MoveStateData>): MovesEnum {
         var bestScore = Int.MIN_VALUE
         var bestMove = availableMoves[0].move
 
