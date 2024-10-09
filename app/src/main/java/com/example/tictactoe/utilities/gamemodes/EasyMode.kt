@@ -47,7 +47,7 @@ class EasyMode : GameMode() {
         return gameState
     }
 
-    fun getMoveAI(): MovesEnum {
+    override fun getMoveAI(): MovesEnum {
         Log.d("EasyMode", "moveAI")
         val availableMoves =
             game.board.availableMoves.moves.filter { it.state == StatesEnum.AVAILABLE }

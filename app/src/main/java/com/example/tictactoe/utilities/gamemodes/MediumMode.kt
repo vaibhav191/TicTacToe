@@ -17,4 +17,7 @@ class MediumMode: GameMode() {
         /* To be implemented */
         return GameResultEnum.NotOver
     }
+    override fun getMoveAI(): MovesEnum {
+        return MovesEnum.TOP_LEFT
+    }
 }

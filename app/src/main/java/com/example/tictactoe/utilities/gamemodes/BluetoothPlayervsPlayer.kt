@@ -17,4 +17,7 @@ class BluetoothPlayervsPlayer: GameMode() {
         /* To be implemented */
         return GameResultEnum.NotOver
     }
+    override fun getMoveAI(): MovesEnum? {
+        return null
+    }
 }

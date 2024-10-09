@@ -25,4 +25,7 @@ class LocalPlayervsPlayer: GameMode() {
         val gameState = game.checkWinner()
         return gameState
     }
+    override fun getMoveAI(): MovesEnum? {
+        return null
+    }
 }
