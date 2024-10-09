@@ -358,15 +358,20 @@ fun tileDy(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = buttonElevation),
         shape = RectangleShape
     ) {
-        if (!firstChangeStates[id.ordinal] && buttonState[id.ordinal] != null) {
+        LaunchedEffect(buttonState[id.ordinal]) {
+            if ((buttonState[id.ordinal] != null) && (!firstChangeStates[id.ordinal])){
+                gameResult.value = game.move(id)
+                firstChangeStates[id.ordinal] = true
+            }
+        }
+        if (buttonState[id.ordinal] != null) {
             Log.d("GameScreen", "tileDy called with id: $id")
             Log.d("GameScreen", "buttonState is not null")
-            gameResult.value = game.move(id)
+//            gameResult.value = game.move(id)
             Log.d("GameScreen", "gameResult: ${gameResult.value}")
             renderMarkDy(buttonState[id.ordinal]!!, Modifier)
 //            game.turn_X = !game.turn_X
             Log.d("GameScreen", "Flipped game.turn_X: ${game.turn_X}")
-            firstChangeStates[id.ordinal] = true
         }
         if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
             showDialog.value = true
