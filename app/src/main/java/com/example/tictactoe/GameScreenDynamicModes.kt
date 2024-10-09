@@ -190,11 +190,12 @@ fun BoardDy(
                         Log.d("GameScreen", "Game is an instance of EasyMode or MediumMode or HardMode")
                         if (!game.turn_X && gameResult.value == GameResultEnum.NotOver) {
                             Log.d("GameScreen", "Game is O turn")
-                            var game = game as EasyMode
                             val aiMove = game.getMoveAI()
                             Log.d("GameScreen", "AI move: $aiMove")
 //                            game.turn_X = true
-                            buttonStates[aiMove.ordinal] = PlayersEnum.O
+                            if (aiMove != null) {
+                                buttonStates[aiMove.ordinal] = PlayersEnum.O
+                            }
                             Log.d("GameScreen", "buttonStates changed: $buttonStates")
                         }
                         else {
