@@ -11,7 +11,7 @@ import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
 class HardMode : GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)
-    override val playerO = PlayerInGame("Player O", PlayersEnum.O)
+    override val playerO = PlayerInGame("AI", PlayersEnum.O)
     override val game = Game(playerX, playerO, board)
     override var turn_X = true
 

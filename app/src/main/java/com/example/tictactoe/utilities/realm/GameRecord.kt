@@ -3,16 +3,18 @@ package com.example.tictactoe.utilities.realm
 import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
 import com.example.tictactoe.utilities.enums.DifficultyEnum
 import com.example.tictactoe.utilities.enums.GameResultEnum
+import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.ObjectId
 
 class GameRecord: RealmObject {
     @PrimaryKey
-    var id: Long = 0
+    var id: ObjectId = ObjectId()
     var datetime: RealmInstant = RealmInstant.now()
-    var difficulty: DifficultyEnum = DifficultyEnum.Easy
-    var connection: ConnectionTypeEnum = ConnectionTypeEnum.Local
+    var difficulty: String = ""
+    var connection: String = ""
     var opponent: String = ""
-    var result: GameResultEnum = GameResultEnum.NotOver
+    var result: String = ""
 }

@@ -12,7 +12,7 @@ import com.example.tictactoe.utilities.selector.RandomSelector
 
 class MediumMode: GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)
-    override val playerO = PlayerInGame("Player O", PlayersEnum.O)
+    override val playerO = PlayerInGame("AI", PlayersEnum.O)
     override val game = Game(playerX, playerO, board)
     override var turn_X = true
     var randomTurn = false

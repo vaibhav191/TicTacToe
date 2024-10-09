@@ -3,16 +3,19 @@ package com.example.tictactoe.utilities.gamemodes
 import android.util.Log
 import com.example.tictactoe.utilities.abstracts.GameMode
 import com.example.tictactoe.utilities.enums.GameResultEnum
+import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
+import com.example.tictactoe.utilities.realm.GameRecord
 import com.example.tictactoe.utilities.selector.RandomSelector
+import kotlinx.coroutines.CoroutineScope
 
 class EasyMode : GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)
-    override val playerO = PlayerInGame("Player O", PlayersEnum.O)
+    override val playerO = PlayerInGame("AI", PlayersEnum.O)
     override var game  = Game(playerX, playerO, board)
     override var turn_X = true
 

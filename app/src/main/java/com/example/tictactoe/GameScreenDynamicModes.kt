@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -59,10 +60,17 @@ import com.example.tictactoe.utilities.gamemodes.EasyMode
 import com.example.tictactoe.utilities.gamemodes.HardMode
 import com.example.tictactoe.utilities.gamemodes.MediumMode
 import com.example.tictactoe.utilities.gameobjs.Board
+import com.example.tictactoe.utilities.realm.GameRecord
+import com.example.tictactoe.utilities.realm.RealmManager
 import com.example.tictactoe.utilities.selector.GameModeSelector
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GameScreenDynamicModes : ComponentActivity() {
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -125,7 +133,19 @@ class GameScreenDynamicModes : ComponentActivity() {
                     )
                     // show game result
                     var showDialog = remember { mutableStateOf<Boolean>(false) }
+                    var writeGameRecordFirstTime = remember { mutableStateOf<Boolean>(false) }
                     if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
+                        if (!writeGameRecordFirstTime.value) {
+                            val gameRecord = GameRecord()
+                            gameRecord.difficulty = difficulty.toString()
+                            gameRecord.connection = connection.toString()
+                            gameRecord.opponent = game.playerO.playerName
+                            gameRecord.result = gameResult.value.toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                saveGameRecord(gameRecord)
+                            }
+                            writeGameRecordFirstTime.value = true
+                        }
                         showDialog.value = true
                     }
                     // show game over dialog
@@ -168,6 +188,14 @@ class GameScreenDynamicModes : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+suspend fun saveGameRecord(gameRecord: GameRecord) {
+    withContext(Dispatchers.IO){
+        val realmManager = RealmManager(Dispatchers.IO)
+        realmManager.writeGameRecord(gameRecord)
+        realmManager.close()
     }
 }
 

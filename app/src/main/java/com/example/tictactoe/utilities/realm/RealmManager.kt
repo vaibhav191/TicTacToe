@@ -1,5 +1,6 @@
 package com.example.tictactoe.utilities.realm
 
+import android.util.Log
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +16,7 @@ class RealmManager(private val context: CoroutineContext) {
     }
 
     fun writeGameRecord(gameRecord: GameRecord) {
+        Log.d("RealmManager", "writeGameRecord")
         realm.writeBlocking {
             val record = copyToRealm(gameRecord)
         }
