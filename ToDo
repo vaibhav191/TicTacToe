@@ -49,25 +49,16 @@ Note:
 	- Github requires version control with each student contributing
 
 To Do:
-	1. REPOSITORY CLEANING:
-		- Change the color of AI's mark (O)
-		- Repo description
-		- Readme: proper project description and usage instructions
-		- Comments - frequent, description and follow professional guidelines
-			https://stackoverflow.blog/2021/12/23/best-practices-for-writingcode-comments/
-		- Validate: Inability to tap on spaces where a move has already been placed
+[ ] - Comments
+[ ] - Resetting game
+[ ] - Change difficulty while game is running
+[ ] - DB and records
+[ ] - Bluetooth
+[X] - Change minimax to alpha-beta pruning code (code is ready with Soham)
 
-	2. DATABASE	
-		- Past games: can scroll to older/recent games 
-	3. REPORT
-		- IEEE format as linked
-		- Explanation of Minimax algorithm
-		- Explanation of alpha-beta pruning
-	4. Bluetooth
-	5. Minimax implementation
-	6. Creating the 4 local game modes
-		- Local multiplayer (completed - class: TwoPlayerMode)
-		- vs AI
-			- Easy
-			- Medium
-			- Difficult
+[ ] - Demo video
+[ ] -  add prof and TAs as collabs
+[ ] - team effectiveness report
+[ ] - project report (25 marks)
+[ ] - README
+[ ] - Validate one position can only be tapped once
