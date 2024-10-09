@@ -1,9 +1,6 @@
 package com.example.tictactoe.utilities.gamemodes
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.example.tictactoe.utilities.abstracts.GameMode
 import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
@@ -11,11 +8,7 @@ import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
-import com.example.tictactoe.utilities.randomselector.SelectRandom
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.tictactoe.utilities.selector.SelectRandom
 
 class EasyMode : GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)

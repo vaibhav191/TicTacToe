@@ -8,7 +8,7 @@ import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
-import com.example.tictactoe.utilities.randomselector.SelectRandom
+import com.example.tictactoe.utilities.selector.SelectRandom
 
 class MediumMode: GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)

@@ -1,4 +1,4 @@
-package com.example.tictactoe.utilities.randomselector
+package com.example.tictactoe.utilities.selector
 
 import android.util.Log
 import com.example.tictactoe.utilities.enums.MovesEnum
