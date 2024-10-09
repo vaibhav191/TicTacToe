@@ -27,11 +27,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,8 +72,35 @@ class GameScreenDynamicModes : ComponentActivity() {
                     ConnectionTypeEnum.getConnectionType(connection)!!
                 ).getGameMode()
                 Log.d("GameScreen", "game: $game")
-                var buttonStates = remember {mutableStateListOf<PlayersEnum?>(null, null, null, null, null, null, null, null, null)}
-                var firstChangeStates = remember {mutableStateListOf<Boolean>(false, false, false, false, false, false, false, false, false)}
+                // button states used to track which buttons are clicked
+                var buttonStates = remember {
+                    mutableStateListOf<PlayersEnum?>(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                }
+                // first change states used to track which buttons have yet to be clicked
+                var firstChangeStates = remember {
+                    mutableStateListOf<Boolean>(
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    )
+                }
+                // game result used to track the result of the game
                 var gameResult = remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -89,10 +114,12 @@ class GameScreenDynamicModes : ComponentActivity() {
                         firstChangeStates = firstChangeStates,
                         gameResult = gameResult
                     )
+                    // show game result
                     var showDialog = remember { mutableStateOf<Boolean>(false) }
                     if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
                         showDialog.value = true
                     }
+                    // show game over dialog
                     if (showDialog.value) {
                         AlertDialog(
                             onDismissRequest = { showDialog.value = false },
@@ -135,6 +162,7 @@ class GameScreenDynamicModes : ComponentActivity() {
     }
 }
 
+// board
 @Composable
 fun BoardDy(
     modifier: Modifier,
@@ -182,23 +210,24 @@ fun BoardDy(
         ) {
             val buttonColor = MaterialTheme.colorScheme.primaryContainer
             val buttonElevation = 10.dp
-            // check if game is an instance of Easy mode, if so cast it to EasyMode
             val turnXState = remember { mutableStateOf(game.turn_X) }
+            // gets ai move if it is AI's turn as long as the game is not over
             LaunchedEffect(turnXState.value) {
                 while (gameResult.value == GameResultEnum.NotOver) {
                     if (game is EasyMode || game is MediumMode || game is HardMode) {
-                        Log.d("GameScreen", "Game is an instance of EasyMode or MediumMode or HardMode")
+                        Log.d(
+                            "GameScreen",
+                            "Game is an instance of EasyMode or MediumMode or HardMode"
+                        )
                         if (!game.turn_X && gameResult.value == GameResultEnum.NotOver) {
                             Log.d("GameScreen", "Game is O turn")
                             val aiMove = game.getMoveAI()
                             Log.d("GameScreen", "AI move: $aiMove")
-//                            game.turn_X = true
                             if (aiMove != null) {
                                 buttonStates[aiMove.ordinal] = PlayersEnum.O
                             }
                             Log.d("GameScreen", "buttonStates changed: $buttonStates")
-                        }
-                        else {
+                        } else {
                             Log.d("GameScreen", "Game is X turn")
                         }
                     }
@@ -224,7 +253,6 @@ fun BoardDy(
                     MovesEnum.TOP_LEFT,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[0]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -237,7 +265,6 @@ fun BoardDy(
                     MovesEnum.TOP_CENTER,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[1]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -250,7 +277,6 @@ fun BoardDy(
                     MovesEnum.TOP_RIGHT,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[2]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -273,7 +299,6 @@ fun BoardDy(
                     MovesEnum.MIDDLE_LEFT,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[3]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -286,7 +311,6 @@ fun BoardDy(
                     MovesEnum.MIDDLE_CENTER,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[4]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -299,7 +323,6 @@ fun BoardDy(
                     MovesEnum.MIDDLE_RIGHT,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[5]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -322,7 +345,6 @@ fun BoardDy(
                     MovesEnum.BOTTOM_LEFT,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[6]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -335,7 +357,6 @@ fun BoardDy(
                     MovesEnum.BOTTOM_CENTER,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[7]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -346,7 +367,6 @@ fun BoardDy(
                     MovesEnum.BOTTOM_RIGHT,
                     buttonColor,
                     buttonElevation,
-//                    buttonState = remember { mutableStateOf(buttonStates.value[8]) },
                     buttonState = buttonStates,
                     gameResult = gameResult,
                     firstChangeStates = firstChangeStates
@@ -381,7 +401,6 @@ fun tileDy(
     id: MovesEnum,
     buttonColor: Color,
     buttonElevation: Dp,
-//    buttonState: MutableState<PlayersEnum?>,
     buttonState: SnapshotStateList<PlayersEnum?>,
     gameResult: MutableState<GameResultEnum>,
     context: Context = LocalContext.current,
