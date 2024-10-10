@@ -26,6 +26,8 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -80,10 +82,11 @@ class GameScreenDynamicModes : ComponentActivity() {
                 Log.d("GameScreen", "GameScreenDynamicModes")
                 val difficulty = intent.getIntExtra("Difficulty", 0)
                 val connection = intent.getIntExtra("Connection", 0)
+                val difficultySlider = remember { mutableStateOf(LocalDifficultyEnum.getDifficulty(difficulty)!!)}
                 Log.d("GameScreen", "difficulty: $difficulty")
                 Log.d("GameScreen", "connection: $connection")
                 var reset = remember { mutableStateOf(false) }
-                val game by remember(reset.value) { mutableStateOf(GameModeSelector(LocalDifficultyEnum.getDifficulty(difficulty)!!, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode()) }
+                val game by remember(reset.value, difficultySlider) { mutableStateOf(GameModeSelector(difficultySlider.value, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode()) }
                 Log.d("GameScreen", "game: $game")
                 // button states used to track which buttons are clicked
                 var buttonStates = remember {
@@ -99,6 +102,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                         null
                     )
                 }
+
                 // first change states used to track which buttons have yet to be clicked
                 var firstChangeStates = remember {
                     mutableStateListOf<Boolean>(
@@ -126,7 +130,8 @@ class GameScreenDynamicModes : ComponentActivity() {
                         buttonStates,
                         firstChangeStates = firstChangeStates,
                         gameResult = gameResult,
-                        reset = reset
+                        reset = reset,
+                        difficultySlider
                     )
                     // show game result
                     var showDialog = remember { mutableStateOf<Boolean>(false) }
@@ -145,7 +150,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                         }
                         showDialog.value = true
                     }
-                    // show game over dialog
+                    // show game 'over' dialog
                     if (showDialog.value) {
                         AlertDialog(
                             onDismissRequest = { showDialog.value = false },
@@ -182,6 +187,9 @@ class GameScreenDynamicModes : ComponentActivity() {
                             }
                         )
                     }
+                    if (difficultySlider.value.value != difficulty) {
+                        Log.d("GameScreen", "difficulty changed")
+                    }
                 }
             }
         }
@@ -206,7 +214,8 @@ fun BoardDy(
     buttonStates: SnapshotStateList<PlayersEnum?>,
     firstChangeStates: SnapshotStateList<Boolean>,
     gameResult: MutableState<GameResultEnum> = remember { mutableStateOf(GameResultEnum.NotOver) },
-    reset: MutableState<Boolean> = remember { mutableStateOf(false) }
+    reset: MutableState<Boolean> = remember { mutableStateOf(false) },
+    difficultySlider: MutableState<LocalDifficultyEnum>
 ) {
     Column {
         LaunchedEffect(reset.value) {
@@ -286,7 +295,6 @@ fun BoardDy(
             }
         }
         Spacer(modifier = Modifier.height(50.dp))
-
         // game board, 9 tileDy buttons
         Column(
             modifier = Modifier
@@ -304,12 +312,6 @@ fun BoardDy(
             LaunchedEffect(turnXState.value, reset.value) {
                 while (gameResult.value == GameResultEnum.NotOver) {
                     if (game is EasyMode || game is MediumMode || game is HardMode) {
-                        Log.d(
-                            "GameScreen",
-                            "Game is an instance of EasyMode or MediumMode or HardMode"
-                        )
-                        Log.d("GameScreen", "turnXState.value: ${turnXState.value}")
-                        Log.d("GameScreen", "game.turnX: ${game.turn_X}")
                         if (!game.turn_X && gameResult.value == GameResultEnum.NotOver) {
                             Log.d("GameScreen", "Game is O turn")
                             val aiMove = game.getMoveAI()
@@ -319,7 +321,7 @@ fun BoardDy(
                             }
                             Log.d("GameScreen", "buttonStates changed: $buttonStates")
                         } else {
-                            Log.d("GameScreen", "Game is X turn")
+                            Log.d("GameScreen", "Waiting for player to move")
                         }
                     }
                     delay(1000)
@@ -464,7 +466,9 @@ fun BoardDy(
                 )
             }
         }
-
+        Row(modifier = Modifier.fillMaxWidth()) {
+            slider(Modifier, difficulty = difficultySlider)
+        }
     }
 }
 
@@ -536,5 +540,28 @@ fun tileDy(
                 Log.d("GameScreen", "Flipped game.turn_X: ${game.turn_X}")
             }
         }
+    }
+}
+
+// slider to show and change difficulty
+@Composable
+fun slider(modifier: Modifier, difficulty: MutableState<LocalDifficultyEnum>){
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
+        val minSliderVal = LocalDifficultyEnum.Easy.value.toFloat()
+        val maxSliderVal = LocalDifficultyEnum.Hard.value.toFloat()
+        Slider(
+            value = difficulty.value.value.toFloat(),
+            onValueChange = { difficulty.value = LocalDifficultyEnum.getDifficulty(it.toInt())!! },
+            colors = SliderDefaults.colors(
+                thumbColor = MaterialTheme.colorScheme.secondary,
+                activeTrackColor = MaterialTheme.colorScheme.secondary,
+                inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+
+            steps = 1,
+            valueRange = minSliderVal..maxSliderVal
+        )
+        // slider value displaying text from local difficulty enum
+        Text(text = LocalDifficultyEnum.getDifficulty(difficulty.value.value).toString())
     }
 }
