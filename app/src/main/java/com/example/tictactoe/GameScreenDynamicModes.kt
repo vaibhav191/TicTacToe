@@ -507,10 +507,12 @@ fun tileDy(
     Button(
         // onClick is called when the button is clicked by the user
         onClick = {
-            if (game.turn_X) {
-                buttonState[id.ordinal] = PlayersEnum.X
-            } else {
-                buttonState[id.ordinal] = PlayersEnum.O
+            if (buttonState[id.ordinal] == null) {
+                if (game.turn_X) {
+                    buttonState[id.ordinal] = PlayersEnum.X
+                } else {
+                    buttonState[id.ordinal] = PlayersEnum.O
+                }
             }
         },
         colors = ButtonDefaults.buttonColors(buttonColor),
