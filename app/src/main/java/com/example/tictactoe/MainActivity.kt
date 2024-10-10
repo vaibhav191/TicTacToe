@@ -37,6 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,8 +52,18 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = { TopBar(Modifier) }) { innerPadding ->
-                    Main(modifier = Modifier.padding(innerPadding))
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "game_screen") {
+                        // Define the destination for the game screen
+                        composable("game_screen") {
+                            Main(navController, modifier = Modifier.padding(innerPadding))
+                        }
 
+                        // Define the destination for the game history screen
+                        composable("game_history_screen") {
+                            GameHistoryScreen(innerPadding)
+                        }
+                    }
                 }
             }
         }
@@ -57,7 +71,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Main(modifier: Modifier, context: Context = LocalContext.current) {
+fun Main(
+    navController: NavController,
+    modifier: Modifier,
+    context: Context = LocalContext.current
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize(),
@@ -69,7 +87,8 @@ fun Main(modifier: Modifier, context: Context = LocalContext.current) {
                 .weight(1f)
                 .fillMaxSize()
                 .padding(
-                    top = 100.dp),
+                    top = 100.dp
+                ),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -115,7 +134,10 @@ fun Main(modifier: Modifier, context: Context = LocalContext.current) {
         }
         // card for records
         Column(modifier = Modifier.weight(0.5f)) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+            Button(
+                onClick = { navController.navigate("game_history_screen") },
+                modifier = Modifier
+            ) {
                 Text(text = "Records")
             }
         }

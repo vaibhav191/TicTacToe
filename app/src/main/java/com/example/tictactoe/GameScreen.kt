@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -44,19 +43,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
+import com.example.tictactoe.utilities.GameHistory
 import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.runners.TwoPlayerMode
+import com.example.tictactoe.utilities.saveGameResult
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class GameScreen : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -364,70 +358,4 @@ fun Tile(
             }
         }
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-suspend fun saveGameResult(
-    realm: Realm,
-    mode: String,
-    difficulty: String?,
-    opponent: String,
-    result: String
-) {
-    withContext(Dispatchers.IO) {
-        realm.write {
-            // Query the maximum existing id
-            val maxId = this.query<GameHistory>().max("id", Long::class).find()
-            val newId = if (maxId != null) maxId + 1 else 1L
-
-            // Create a new game history entry
-            val newGame = GameHistory().apply {
-                id = newId
-                date = getDate()
-                time = getTime()
-                this.mode = mode
-                this.difficulty = difficulty
-                this.opponent = opponent
-                this.result = result
-            }
-
-            // Save the new game in Realm
-            copyToRealm(newGame)
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun getDate(): String {
-    val current = LocalDateTime.now()
-
-    val dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
-    val formattedDate = current.format(dateFormatter)
-
-    Log.d("Date", "Current Date: $formattedDate")
-
-    return formattedDate
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun getTime(): String {
-    val current = LocalDateTime.now()
-
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    val formattedTime = current.format(timeFormatter)
-
-    Log.d("Time", "Current Time: $formattedTime")
-
-    return formattedTime
-}
-
-class GameHistory : RealmObject {
-    @PrimaryKey
-    var id: Long = 0
-    var date: String = "" // "MM/dd/yyyy" format
-    var time: String = "" // 24-hour format
-    var mode: String = "" // "Single" or "Multiplayer"
-    var difficulty: String? = null // For single player: "Easy", "Medium", "Hard"
-    var opponent: String = "" // "AI" or opponent's name
-    var result: String = "" // "Win", "Loss", "Draw"
 }
