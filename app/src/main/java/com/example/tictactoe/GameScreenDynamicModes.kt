@@ -70,27 +70,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-/**
- * GameScreenDynamicModes is an activity that sets up the game screen for Tic Tac Toe with dynamic modes.
- * It initializes the game based on the difficulty and connection type passed through the intent.
- * The activity uses Jetpack Compose for UI rendering and manages game state using Compose's state management.
- * @suppressLint("CoroutineCreationDuringComposition") Suppresses the lint warning for creating coroutines during composition.
- * Functions:
- * - onCreate(savedInstanceState: Bundle?): Initializes the activity, sets up the UI, and manages game state.
- * UI Components:
- * - Scaffold: The main layout structure with a top bar and content.
- * - BoardDy: The game board component.
- * - AlertDialog: Displays the game over dialog with the result.
- * State Management:
- * - reset: Tracks whether the game should be reset.
- * - buttonStates: Tracks the state of each button on the game board.
- * - firstChangeStates: Tracks whether each button has been clicked for the first time.
- * - gameResult: Tracks the result of the game (Win, Lose, Draw, NotOver).
- * - showDialog: Controls the visibility of the game over dialog.
- * - writeGameRecordFirstTime: Ensures the game record is written only once.
- * Game Record:
- * - Creates and saves a game record when the game is over.
- */
 class GameScreenDynamicModes : ComponentActivity() {
     @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
