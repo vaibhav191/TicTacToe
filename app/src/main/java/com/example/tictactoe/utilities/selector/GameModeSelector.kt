@@ -1,5 +1,6 @@
 package com.example.tictactoe.utilities.selector
 
+import android.util.Log
 import com.example.tictactoe.utilities.abstracts.GameMode
 import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
 import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
@@ -13,6 +14,7 @@ import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
 class GameModeSelector(val difficulty: LocalDifficultyEnum, val connection: ConnectionTypeEnum, ) {
     fun getGameMode(): GameMode{
+        Log.d("GameModeSelector", "difficulty: $difficulty")
         when(connection){
             ConnectionTypeEnum.Local -> {
                 when (difficulty) {
