@@ -12,7 +12,7 @@ import org.mongodb.kbson.ObjectId
 class GameRecord: RealmObject {
     @PrimaryKey
     var id: ObjectId = ObjectId()
-    var datetime: RealmInstant = RealmInstant.now()
+    var datetime: Long = System.currentTimeMillis()
     var difficulty: String = ""
     var connection: String = ""
     var opponent: String = ""

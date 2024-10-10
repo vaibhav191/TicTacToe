@@ -137,8 +137,8 @@ class GameScreenDynamicModes : ComponentActivity() {
                     if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
                         if (!writeGameRecordFirstTime.value) {
                             val gameRecord = GameRecord()
-                            gameRecord.difficulty = difficulty.toString()
-                            gameRecord.connection = connection.toString()
+                            gameRecord.difficulty = LocalDifficultyEnum.getDifficulty(difficulty).toString()
+                            gameRecord.connection = ConnectionTypeEnum.getConnectionType(connection).toString()
                             gameRecord.opponent = game.playerO.playerName
                             gameRecord.result = gameResult.value.toString()
                             CoroutineScope(Dispatchers.IO).launch {

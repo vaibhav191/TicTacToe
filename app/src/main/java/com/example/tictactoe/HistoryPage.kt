@@ -30,6 +30,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 class HistoryPage : ComponentActivity() {
@@ -72,12 +74,14 @@ fun History(modifier: Modifier = Modifier) {
             }
             Log.d("HistoryPage", "Table header row added")
             // Table Rows
+            val dateFormat = SimpleDateFormat("MM/dd/yyyy HH:mm")
             records.forEach { record ->
                 Row(
                 ) {
+                    val date = Date(record.datetime)
                     TableCell(text = record.id.toString(), height = 50, width = 100)
                     TableCell(
-                        text = record.datetime.toString(),
+                        text = dateFormat.format(date),
                         height = 50,
                         width = 100
                     )
