@@ -82,10 +82,6 @@ class GameScreenDynamicModes : ComponentActivity() {
                 Log.d("GameScreen", "difficulty: $difficulty")
                 Log.d("GameScreen", "connection: $connection")
                 var reset = remember { mutableStateOf(false) }
-//                var game = GameModeSelector(
-//                    LocalDifficultyEnum.getDifficulty(difficulty)!!,
-//                    ConnectionTypeEnum.getConnectionType(connection)!!
-//                ).getGameMode()
                 val game by remember(reset.value) { mutableStateOf(GameModeSelector(LocalDifficultyEnum.getDifficulty(difficulty)!!, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode()) }
                 Log.d("GameScreen", "game: $game")
                 // button states used to track which buttons are clicked
@@ -325,7 +321,7 @@ fun BoardDy(
                             Log.d("GameScreen", "Game is X turn")
                         }
                     }
-                    delay(500)
+                    delay(1000)
                 }
             }
             Log.d("GameScreen", "Outside LaunchedEffect")
