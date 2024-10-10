@@ -86,7 +86,13 @@ class GameScreenDynamicModes : ComponentActivity() {
                 Log.d("GameScreen", "difficulty: $difficulty")
                 Log.d("GameScreen", "connection: $connection")
                 var reset = remember { mutableStateOf(false) }
-                val game by remember(reset.value, difficultySlider) { mutableStateOf(GameModeSelector(difficultySlider.value, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode()) }
+//                val game by remember(reset.value, difficultySlider) {
+//                    Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
+//                    mutableStateOf(GameModeSelector(difficultySlider.value, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode())
+//                }
+                val game = remember(reset.value, difficultySlider.value) {
+                    Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
+                    mutableStateOf(GameModeSelector(difficultySlider.value, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode())}
                 Log.d("GameScreen", "game: $game")
                 // button states used to track which buttons are clicked
                 var buttonStates = remember {
@@ -141,7 +147,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                             val gameRecord = GameRecord()
                             gameRecord.difficulty = LocalDifficultyEnum.getDifficulty(difficulty).toString()
                             gameRecord.connection = ConnectionTypeEnum.getConnectionType(connection).toString()
-                            gameRecord.opponent = game.playerO.playerName
+                            gameRecord.opponent = game.value.playerO.playerName
                             gameRecord.result = gameResult.value.toString()
                             CoroutineScope(Dispatchers.IO).launch {
                                 saveGameRecord(gameRecord)
@@ -160,11 +166,11 @@ class GameScreenDynamicModes : ComponentActivity() {
                             text = {
                                 val message = when (gameResult.value) {
                                     GameResultEnum.Win -> {
-                                        "${game.playerX.playerName} won!"
+                                        "${game.value.playerX.playerName} won!"
                                     }
 
                                     GameResultEnum.Lose -> {
-                                        "${game.playerO.playerName} won!"
+                                        "${game.value.playerO.playerName} won!"
                                     }
 
                                     GameResultEnum.Draw -> {
@@ -208,7 +214,7 @@ suspend fun saveGameRecord(gameRecord: GameRecord) {
 @Composable
 fun BoardDy(
     modifier: Modifier,
-    game: GameMode,
+    game: MutableState<GameMode>,
     difficulty: LocalDifficultyEnum,
     connection: ConnectionTypeEnum,
     buttonStates: SnapshotStateList<PlayersEnum?>,
@@ -307,14 +313,14 @@ fun BoardDy(
         ) {
             val buttonColor = MaterialTheme.colorScheme.primaryContainer
             val buttonElevation = 10.dp
-            val turnXState = remember { mutableStateOf(game.turn_X) }
+            val turnXState = remember { mutableStateOf(game.value.turn_X) }
             // gets ai move if it is AI's turn as long as the game is not over
             LaunchedEffect(turnXState.value, reset.value) {
                 while (gameResult.value == GameResultEnum.NotOver) {
-                    if (game is EasyMode || game is MediumMode || game is HardMode) {
-                        if (!game.turn_X && gameResult.value == GameResultEnum.NotOver) {
+                    if (game.value is EasyMode || game.value is MediumMode || game.value is HardMode) {
+                        if (!game.value.turn_X && gameResult.value == GameResultEnum.NotOver) {
                             Log.d("GameScreen", "Game is O turn")
-                            val aiMove = game.getMoveAI()
+                            val aiMove = game.value.getMoveAI()
                             Log.d("GameScreen", "AI move: $aiMove")
                             if (aiMove != null) {
                                 buttonStates[aiMove.ordinal] = PlayersEnum.O
@@ -495,7 +501,7 @@ fun renderMarkDy(playerType: PlayersEnum, modifier: Modifier) {
 @Composable
 fun tileDy(
     modifier: Modifier,
-    game: GameMode,
+    game: MutableState<GameMode>,
     id: MovesEnum,
     buttonColor: Color,
     buttonElevation: Dp,
@@ -509,7 +515,7 @@ fun tileDy(
         // onClick is called when the button is clicked by the user
         onClick = {
             if (buttonState[id.ordinal] == null) {
-                if (game.turn_X) {
+                if (game.value.turn_X) {
                     buttonState[id.ordinal] = PlayersEnum.X
                 } else {
                     buttonState[id.ordinal] = PlayersEnum.O
@@ -528,7 +534,7 @@ fun tileDy(
                 if ((buttonState[id.ordinal] != null) && (!firstChangeStates[id.ordinal])) {
                     Log.d("GameScreen", "tileDy called with id: $id")
                     Log.d("GameScreen", "buttonState is not null")
-                    gameResult.value = game.move(id)
+                    gameResult.value = game.value.move(id)
                     firstChangeStates[id.ordinal] = true
                 }
             }
@@ -537,7 +543,7 @@ fun tileDy(
             if (buttonState[id.ordinal] != null) {
                 Log.d("GameScreen", "gameResult: ${gameResult.value}")
                 renderMarkDy(buttonState[id.ordinal]!!, Modifier)
-                Log.d("GameScreen", "Flipped game.turn_X: ${game.turn_X}")
+                Log.d("GameScreen", "Flipped game.turn_X: ${game.value.turn_X}")
             }
         }
     }
