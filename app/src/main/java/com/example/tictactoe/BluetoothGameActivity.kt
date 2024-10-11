@@ -143,7 +143,8 @@ fun BluetoothGameScreen(
                     showGameEndDialog = false
                     showFirstPlayerDialog = true
                 },
-                onBackToMenu = onBackPressed
+                onBackToMenu = onBackPressed,
+                isMyTurn = isMyTurn
             )
         }
 
@@ -225,17 +226,22 @@ fun GameEndDialog(
     gameData: GameData,
     mySymbol: String,
     onPlayAgain: () -> Unit,
-    onBackToMenu: () -> Unit
+    onBackToMenu: () -> Unit,
+    isMyTurn: Boolean = false
 ) {
     AlertDialog(
         onDismissRequest = { },
         title = { Text("Game Over") },
         text = {
+            Log.d("GameEndDialog", "mySymbol: $mySymbol")
+            Log.d("GameEndDialog", "gameData.gameState.winner: ${gameData.gameState.winner}")
+            Log.d("GameEndDialog", "isMyTurn: $isMyTurn")
             Text(
                 when {
                     gameData.gameState.draw -> "It's a draw!"
-                    gameData.gameState.winner == mySymbol -> "You won!"
-                    else -> "You lost!"
+                    !isMyTurn -> "You won!"
+                    isMyTurn -> "You lost!"
+                    else -> "Something is wrong!"
                 }
             )
         },
