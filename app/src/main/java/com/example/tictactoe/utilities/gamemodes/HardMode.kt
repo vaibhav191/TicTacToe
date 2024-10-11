@@ -6,14 +6,18 @@ import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
+import com.example.tictactoe.utilities.gameobjs.Board
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
-class HardMode : GameMode() {
-    override val playerX = PlayerInGame("Player X", PlayersEnum.X)
-    override val playerO = PlayerInGame("AI", PlayersEnum.O)
+class HardMode(
+    playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
+    playerO: PlayerInGame = PlayerInGame("AI", PlayersEnum.O),
+    board: Board = Board(),
+    turn_X: Boolean = true
+) : GameMode() {
     override val game = Game(playerX, playerO, board)
-    override var turn_X = true
+    override var turn_X = turn_X
 
     override fun move(move: MovesEnum): GameResultEnum {
 

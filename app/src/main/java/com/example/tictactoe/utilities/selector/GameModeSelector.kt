@@ -4,28 +4,46 @@ import android.util.Log
 import com.example.tictactoe.utilities.abstracts.GameMode
 import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
 import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
+import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.gamemodes.BluetoothPlayervsPlayer
 import com.example.tictactoe.utilities.gamemodes.EasyMode
 import com.example.tictactoe.utilities.gamemodes.HardMode
 import com.example.tictactoe.utilities.gamemodes.LocalPlayervsPlayer
 import com.example.tictactoe.utilities.gamemodes.MediumMode
+import com.example.tictactoe.utilities.gameobjs.Board
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
-class GameModeSelector(val difficulty: LocalDifficultyEnum, val connection: ConnectionTypeEnum, ) {
+class GameModeSelector(val difficulty: LocalDifficultyEnum, val connection: ConnectionTypeEnum,
+    val board:Board = Board(),
+    val playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
+    val playerO: PlayerInGame = PlayerInGame("Player O", PlayersEnum.O),
+    val turn_X: Boolean = true
+    ) {
     fun getGameMode(): GameMode{
-        Log.d("GameModeSelector", "difficulty: $difficulty")
         when(connection){
             ConnectionTypeEnum.Local -> {
                 when (difficulty) {
                     LocalDifficultyEnum.Easy -> {
-                        return EasyMode()
+                        val game = EasyMode(board = board, playerX = playerX, playerO = playerO, turn_X = turn_X)
+                        Log.d("GameModeSelector", "game: $game")
+                        Log.d("GameModeSelector", "game.turn_X: ${game.turn_X}")
+                        Log.d("GameModeSelector", "game.board: ${game.game.board.availableMoves}")
+                        return game
                     }
                     LocalDifficultyEnum.Medium -> {
-                        return MediumMode()
+                        val game = MediumMode(board = board, playerX = playerX, playerO = playerO, turn_X = turn_X)
+                        Log.d("GameModeSelector", "game: $game")
+                        Log.d("GameModeSelector", "game.turn_X: ${game.turn_X}")
+                        Log.d("GameModeSelector", "game.board: ${game.game.board.availableMoves}")
+                        return  game
                     }
                     LocalDifficultyEnum.Hard -> {
-                        return HardMode()
+                        val game = HardMode(board = board, playerX = playerX, playerO = playerO, turn_X = turn_X)
+                        Log.d("GameModeSelector", "game: $game")
+                        Log.d("GameModeSelector", "game.turn_X: ${game.turn_X}")
+                        Log.d("GameModeSelector", "game.board: ${game.game.board.availableMoves}")
+                        return game
                     }
                     LocalDifficultyEnum.PlayervsPlayer -> {
                         return LocalPlayervsPlayer()

@@ -62,6 +62,7 @@ import com.example.tictactoe.utilities.gamemodes.EasyMode
 import com.example.tictactoe.utilities.gamemodes.HardMode
 import com.example.tictactoe.utilities.gamemodes.MediumMode
 import com.example.tictactoe.utilities.gameobjs.Board
+import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 import com.example.tictactoe.utilities.realm.GameRecord
 import com.example.tictactoe.utilities.realm.RealmManager
 import com.example.tictactoe.utilities.selector.GameModeSelector
@@ -82,17 +83,32 @@ class GameScreenDynamicModes : ComponentActivity() {
                 Log.d("GameScreen", "GameScreenDynamicModes")
                 val difficulty = intent.getIntExtra("Difficulty", 0)
                 val connection = intent.getIntExtra("Connection", 0)
-                val difficultySlider = remember { mutableStateOf(LocalDifficultyEnum.getDifficulty(difficulty)!!)}
+                val difficultySlider =
+                    remember { mutableStateOf(LocalDifficultyEnum.getDifficulty(difficulty)!!) }
                 Log.d("GameScreen", "difficulty: $difficulty")
                 Log.d("GameScreen", "connection: $connection")
                 var reset = remember { mutableStateOf(false) }
-//                val game by remember(reset.value, difficultySlider) {
-//                    Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
-//                    mutableStateOf(GameModeSelector(difficultySlider.value, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode())
-//                }
-                val game = remember(reset.value, difficultySlider.value) {
-                    Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
-                    mutableStateOf(GameModeSelector(difficultySlider.value, ConnectionTypeEnum.getConnectionType(connection)!!).getGameMode())}
+                val board = remember { mutableStateOf(Board()) }
+                val playerX = remember { mutableStateOf(PlayerInGame("Player X", PlayersEnum.X)) }
+                val playerO = remember { mutableStateOf(PlayerInGame("Player O", PlayersEnum.O)) }
+                val turn_X = remember {
+                    mutableStateOf(true)
+                }
+                val game =
+                    remember(reset.value, difficultySlider.value, playerX, playerO, board) {
+                        Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
+                        Log.d("GameScreen", "mutable turn_X: $turn_X")
+                        mutableStateOf(
+                            GameModeSelector(
+                                difficultySlider.value,
+                                ConnectionTypeEnum.getConnectionType(connection)!!,
+                                board.value,
+                                playerX.value,
+                                playerO.value,
+                                turn_X.value
+                            ).getGameMode()
+                        )
+                    }
                 Log.d("GameScreen", "game: $game")
                 // button states used to track which buttons are clicked
                 var buttonStates = remember {
@@ -145,8 +161,10 @@ class GameScreenDynamicModes : ComponentActivity() {
                     if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
                         if (!writeGameRecordFirstTime.value) {
                             val gameRecord = GameRecord()
-                            gameRecord.difficulty = LocalDifficultyEnum.getDifficulty(difficulty).toString()
-                            gameRecord.connection = ConnectionTypeEnum.getConnectionType(connection).toString()
+                            gameRecord.difficulty =
+                                LocalDifficultyEnum.getDifficulty(difficulty).toString()
+                            gameRecord.connection =
+                                ConnectionTypeEnum.getConnectionType(connection).toString()
                             gameRecord.opponent = game.value.playerO.playerName
                             gameRecord.result = gameResult.value.toString()
                             CoroutineScope(Dispatchers.IO).launch {
@@ -193,9 +211,6 @@ class GameScreenDynamicModes : ComponentActivity() {
                             }
                         )
                     }
-                    if (difficultySlider.value.value != difficulty) {
-                        Log.d("GameScreen", "difficulty changed")
-                    }
                 }
             }
         }
@@ -203,7 +218,7 @@ class GameScreenDynamicModes : ComponentActivity() {
 }
 
 suspend fun saveGameRecord(gameRecord: GameRecord) {
-    withContext(Dispatchers.IO){
+    withContext(Dispatchers.IO) {
         val realmManager = RealmManager(Dispatchers.IO)
         realmManager.writeGameRecord(gameRecord)
         realmManager.close()
@@ -315,9 +330,18 @@ fun BoardDy(
             val buttonElevation = 10.dp
             val turnXState = remember { mutableStateOf(game.value.turn_X) }
             // gets ai move if it is AI's turn as long as the game is not over
-            LaunchedEffect(turnXState.value, reset.value) {
+            LaunchedEffect(turnXState.value, reset.value, game.value) {
                 while (gameResult.value == GameResultEnum.NotOver) {
                     if (game.value is EasyMode || game.value is MediumMode || game.value is HardMode) {
+                        if (game.value is EasyMode) {
+                            Log.d("GameScreen", "Game is Easy Mode")
+                        }
+                        if (game.value is MediumMode) {
+                            Log.d("GameScreen", "Game is Medium Mode")
+                        }
+                        if (game.value is HardMode) {
+                            Log.d("GameScreen", "Game is Hard Mode")
+                        }
                         if (!game.value.turn_X && gameResult.value == GameResultEnum.NotOver) {
                             Log.d("GameScreen", "Game is O turn")
                             val aiMove = game.value.getMoveAI()
@@ -551,7 +575,7 @@ fun tileDy(
 
 // slider to show and change difficulty
 @Composable
-fun slider(modifier: Modifier, difficulty: MutableState<LocalDifficultyEnum>){
+fun slider(modifier: Modifier, difficulty: MutableState<LocalDifficultyEnum>) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
         val minSliderVal = LocalDifficultyEnum.Easy.value.toFloat()
         val maxSliderVal = LocalDifficultyEnum.Hard.value.toFloat()

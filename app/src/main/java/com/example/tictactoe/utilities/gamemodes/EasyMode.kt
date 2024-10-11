@@ -7,18 +7,20 @@ import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
+import com.example.tictactoe.utilities.gameobjs.Board
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 import com.example.tictactoe.utilities.realm.GameRecord
 import com.example.tictactoe.utilities.selector.RandomSelector
 import kotlinx.coroutines.CoroutineScope
 
-class EasyMode : GameMode() {
-    override val playerX = PlayerInGame("Player X", PlayersEnum.X)
-    override val playerO = PlayerInGame("AI", PlayersEnum.O)
+class EasyMode(playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
+   playerO: PlayerInGame = PlayerInGame("AI", PlayersEnum.O),
+    board: Board = Board(),
+    turn_X: Boolean = true
+    ) : GameMode() {
     override var game  = Game(playerX, playerO, board)
-    override var turn_X = true
-
+    override var turn_X = turn_X
 
     override fun move(move: MovesEnum): GameResultEnum {
         Log.d("EasyMode", "move: $move")
