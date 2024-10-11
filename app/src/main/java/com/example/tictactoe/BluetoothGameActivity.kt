@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +15,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 import com.example.tictactoe.utilities.bluetooth.BluetoothGameManager
@@ -60,7 +64,11 @@ fun BluetoothGameScreen(
     val isMyTurn by bluetoothGameManager.isMyTurn.collectAsState()
     val scannedDevices by bluetoothGameManager.scannedDevices.collectAsState()
     val scope = rememberCoroutineScope()
-
+    val reset = remember { mutableStateOf(false) }
+    if (reset.value) {
+        bluetoothGameManager.resetGame()
+        reset.value = false
+    }
     var showFirstPlayerDialog by remember { mutableStateOf(false) }
     var showGameEndDialog by remember { mutableStateOf(false) }
 
@@ -94,6 +102,17 @@ fun BluetoothGameScreen(
                             }
                         }
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Button(onClick = {
+                            reset.value = true
+                        }, modifier = Modifier.size(80.dp), colors = ButtonDefaults.buttonColors(
+                            Color.Transparent)
+                        )
+                        {
+                            Image(painter = painterResource(id = R.drawable.undo_arrow), contentDescription = null, contentScale = ContentScale.Inside)
+                        }
+                    }
                 }
             }
             is BluetoothGameManager.ConnectionState.Disconnected -> {

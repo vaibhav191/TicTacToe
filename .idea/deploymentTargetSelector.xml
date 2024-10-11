@@ -8,12 +8,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCX80E9K3F" />
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=RZ8NA1PRX7X" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=RZ8NA1PRX7X" />
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCX80E9K3F" />
               </handle>
             </Target>
           </targets>
