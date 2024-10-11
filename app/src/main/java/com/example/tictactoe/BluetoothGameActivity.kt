@@ -53,6 +53,7 @@ class BluetoothGameActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition", "CoroutineCreationDuringComposition")
 @Composable
 fun BluetoothGameScreen(
     bluetoothGameManager: BluetoothGameManager,
@@ -70,11 +71,12 @@ fun BluetoothGameScreen(
         reset.value = false
     }
     var showFirstPlayerDialog by remember { mutableStateOf(false) }
-    var showGameEndDialog by remember { mutableStateOf(false) }
+    var showGameEndDialog by remember { mutableStateOf(bluetoothGameManager.gameData.value.showDialog) }
 
     LaunchedEffect(gameData.gameState) {
         if (gameData.gameState.winner != " " || gameData.gameState.draw) {
-            showGameEndDialog = true
+            bluetoothGameManager.gameData.value.showDialog = true
+            bluetoothGameManager.sendGameData(gameData)
         }
     }
 
@@ -89,7 +91,7 @@ fun BluetoothGameScreen(
                             }
                         }
                     )
-                } else if (!showGameEndDialog) {
+                } else if (!bluetoothGameManager.gameData.value.showDialog) {
                     GameBoard(
                         gameData = gameData,
                         myMacAddress = myMacAddress,
@@ -112,6 +114,11 @@ fun BluetoothGameScreen(
                         {
                             Image(painter = painterResource(id = R.drawable.undo_arrow), contentDescription = null, contentScale = ContentScale.Inside)
                         }
+                    }
+                }
+                else{
+                    scope.launch {
+                        bluetoothGameManager.sendGameData(gameData)
                     }
                 }
             }
@@ -153,11 +160,12 @@ fun BluetoothGameScreen(
             }
         }
 
-        if (showGameEndDialog) {
+        if (bluetoothGameManager.gameData.value.showDialog) {
             GameEndDialog(
                 gameData = gameData,
                 mySymbol = if (gameData.metadata.miniGame.player1Choice == myMacAddress) "X" else "O",
                 onPlayAgain = {
+                    bluetoothGameManager.gameData.value.showDialog = false
                     bluetoothGameManager.resetGame()
                     showGameEndDialog = false
                     showFirstPlayerDialog = true

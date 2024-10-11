@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GameData(
     var gameState: GameState = GameState(),
-    var metadata: Metadata = Metadata(listOf(), MiniGame())
+    var metadata: Metadata = Metadata(listOf(), MiniGame()),
+    var showDialog: Boolean = false
 )
 
 @Serializable
@@ -21,7 +22,8 @@ data class GameState(
 @Serializable
 data class Metadata(
     var choices: List<Choice>,
-    var miniGame: MiniGame
+    var miniGame: MiniGame,
+    var showDialog: Boolean = false
 )
 
 @Serializable

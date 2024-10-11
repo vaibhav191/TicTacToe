@@ -163,7 +163,7 @@ class BluetoothGameManager(private val context: Context) {
         Log.d("BluetoothGameManager", "Move sent. Current turn: $newTurn, isMyTurn: ${_isMyTurn.value}, Winner: $winner, Draw: $isDraw")
     }
 
-    private suspend fun sendGameData(gameData: GameData) {
+     suspend fun sendGameData(gameData: GameData) {
         withContext(Dispatchers.IO) {
             try {
                 val jsonData = json.encodeToString(gameData)
