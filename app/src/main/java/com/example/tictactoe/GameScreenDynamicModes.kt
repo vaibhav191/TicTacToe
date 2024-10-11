@@ -90,7 +90,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                 var reset = remember { mutableStateOf(false) }
                 val board = remember { mutableStateOf(Board()) }
                 val playerX = remember { mutableStateOf(PlayerInGame("Player X", PlayersEnum.X)) }
-                val playerO = remember { mutableStateOf(PlayerInGame("Player O", PlayersEnum.O)) }
+                val playerO = remember { mutableStateOf(PlayerInGame("AI", PlayersEnum.O)) }
                 val turn_X = remember {
                     mutableStateOf(true)
                 }
@@ -162,7 +162,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                         if (!writeGameRecordFirstTime.value) {
                             val gameRecord = GameRecord()
                             gameRecord.difficulty =
-                                LocalDifficultyEnum.getDifficulty(difficulty).toString()
+                                LocalDifficultyEnum.getDifficulty(difficultySlider.value.value).toString()
                             gameRecord.connection =
                                 ConnectionTypeEnum.getConnectionType(connection).toString()
                             gameRecord.opponent = game.value.playerO.playerName
