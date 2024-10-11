@@ -284,7 +284,7 @@ fun BoardDy(
                 )
                 // show difficulty
                 Text(
-                    text = difficulty.name,
+                    text = difficultySlider.value.name,
                     fontStyle = FontStyle.Italic,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.SemiBold
