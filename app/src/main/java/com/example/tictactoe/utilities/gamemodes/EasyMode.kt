@@ -18,7 +18,11 @@ class EasyMode(playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
    playerO: PlayerInGame = PlayerInGame("AI", PlayersEnum.O),
     board: Board = Board(),
     turn_X: Boolean = true
-    ) : GameMode() {
+    ) : GameMode(
+        playerX = playerX,
+        playerO = playerO,
+        board = board
+    ) {
     override var game  = Game(playerX, playerO, board)
     override var turn_X = turn_X
 

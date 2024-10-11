@@ -16,7 +16,11 @@ class MediumMode(
     playerO: PlayerInGame = PlayerInGame("AI", PlayersEnum.O),
     board: Board = Board(),
     turn_X: Boolean = true
-): GameMode() {
+): GameMode(
+    board = board,
+    playerX = playerX,
+    playerO = playerO
+) {
     override val game = Game(playerX, playerO, board)
     override var turn_X = turn_X
     var randomTurn = false
