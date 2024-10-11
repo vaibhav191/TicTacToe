@@ -95,7 +95,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                     mutableStateOf(true)
                 }
                 val game =
-                    remember(reset.value, difficultySlider.value, playerX, playerO, board) {
+                    remember(reset.value, difficultySlider.value,) {
                         Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
                         Log.d("GameScreen", "mutable turn_X: $turn_X")
                         mutableStateOf(
