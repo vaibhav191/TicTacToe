@@ -51,7 +51,7 @@ Note:
 To Do:
 [ ] - Comments
 [X] - Resetting game
-[ ] - Change difficulty while game is running
+[X] - Change difficulty while game is running
 [X] - DB and records
 [ ] - Bluetooth
 [X] - Change minimax to alpha-beta pruning code (code is ready with Soham)
