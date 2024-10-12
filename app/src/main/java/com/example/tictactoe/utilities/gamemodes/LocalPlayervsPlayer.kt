@@ -22,7 +22,7 @@ class LocalPlayervsPlayer : GameMode(
         true // To track whose turn it is, true indicates Player X's turn and false indicates AI's turn
 
     // Handling the moves made based on whose turn it is
-    override fun move(move: MovesEnum): GameResultEnum {
+    override suspend fun move(move: MovesEnum): GameResultEnum {
         if (this.turn_X) {
             game.move(true, false, move)
             this.turn_X = false // Switch turn to Player O

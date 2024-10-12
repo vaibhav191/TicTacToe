@@ -131,10 +131,11 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
             }
         }
         // card for multiplayer
+        // over bluetooth
         Column(modifier = Modifier.weight(1f)) {
             Button(onClick = {
-//                val bluetoothintent = Intent(context, BluetoothGameActivity::class.java)
-//                context.startActivity(bluetoothintent)
+                val bluetoothintent = Intent(context, BluetoothGameActivity::class.java)
+                context.startActivity(bluetoothintent)
             }, modifier = Modifier) {
                 Text(text = "Multiplayer over Bluetooth")
             }

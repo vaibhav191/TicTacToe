@@ -29,7 +29,7 @@ class MediumMode(
     var randomTurn = false // A flag to toggle between random AI moves and strategic moves (minimax)
 
     // Handling the moves made based on whose turn it is
-    override fun move(move: MovesEnum): GameResultEnum {
+    override suspend fun move(move: MovesEnum): GameResultEnum {
         Log.d("MediumMode", "move: $move")
         /* To be implemented */
         if (this.turn_X) {

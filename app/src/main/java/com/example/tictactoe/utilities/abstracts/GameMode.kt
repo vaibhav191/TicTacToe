@@ -16,6 +16,6 @@ abstract class GameMode(
     open val turn_X: Boolean = true
 ) {
     open val game: Game = Game(playerX, playerO, board) // Object that holds information about the current game state (players and board)
-    abstract fun move(move: MovesEnum): GameResultEnum // Abstract method that handles a move and returns the result of the game
+    abstract suspend fun move(move: MovesEnum): GameResultEnum // Abstract method that handles a move and returns the result of the game
     abstract fun getMoveAI(): MovesEnum? // Abstract method that is implemented differently in each game mode to return the AI's next move
 }

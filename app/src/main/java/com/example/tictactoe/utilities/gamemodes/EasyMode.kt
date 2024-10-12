@@ -28,7 +28,7 @@ class EasyMode(
         turn_X // To track whose turn it is, true indicates Player X's turn and false indicates AI's turn
 
     // Handling the moves made based on whose turn it is
-    override fun move(move: MovesEnum): GameResultEnum {
+    override suspend fun move(move: MovesEnum): GameResultEnum {
         Log.d("EasyMode", "move: $move")
         /* To be implemented */
         if (this.turn_X) {
