@@ -35,8 +35,9 @@ The app features a clean and intuitive UI with separate screens for gameplay, se
 ## Setup Instructions
 
 1. **Clone the Repository**:
-bash git clone <git clone https://github.com/vaibhav191/Project2.git>
-
+    ```sh
+    git clone https://github.com/vaibhav191/Project2.git
+    ```
 
 2. **Open in Android Studio/Xcode**: Import the project into your preferred IDE.
 
