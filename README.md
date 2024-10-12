@@ -49,7 +49,7 @@ The app features a clean and intuitive UI with separate screens for gameplay, se
 
 - Run the application on an emulator or physical device.
 - Follow the on-screen instructions to use the app.
-- **Bluetooth Setup**: Ensure Bluetooth is enabled on your devices for multiplayer gameplay.
+- Ensure Bluetooth is enabled on your devices for multiplayer gameplay.
 
 ## Contact
 
