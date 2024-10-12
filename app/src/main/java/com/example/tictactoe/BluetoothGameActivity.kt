@@ -23,7 +23,13 @@ import com.example.tictactoe.ui.theme.TicTacToeTheme
 import com.example.tictactoe.utilities.bluetooth.BluetoothGameManager
 import com.example.tictactoe.utilities.bluetooth.GameData
 import com.example.tictactoe.utilities.enums.MovesEnum
+import com.example.tictactoe.utilities.realm.GameRecord
+import com.example.tictactoe.utilities.realm.RealmManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 class BluetoothGameActivity : ComponentActivity() {
     private lateinit var bluetoothGameManager: BluetoothGameManager
@@ -41,7 +47,7 @@ class BluetoothGameActivity : ComponentActivity() {
                 BluetoothGameScreen(
                     bluetoothGameManager = bluetoothGameManager,
                     myMacAddress = myMacAddress,
-                    onBackPressed = { finish() }
+                    onBackPressed = { finish() },
                 )
             }
         }
@@ -57,7 +63,7 @@ class BluetoothGameActivity : ComponentActivity() {
 fun BluetoothGameScreen(
     bluetoothGameManager: BluetoothGameManager,
     myMacAddress: String,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
 ) {
     val connectionState by bluetoothGameManager.connectionState.collectAsState()
     val gameData by bluetoothGameManager.gameData.collectAsState()
@@ -163,7 +169,7 @@ fun BluetoothGameScreen(
                     showFirstPlayerDialog = true
                 },
                 onBackToMenu = onBackPressed,
-                isMyTurn = isMyTurn
+                isMyTurn = isMyTurn,
             )
         }
 
@@ -240,14 +246,25 @@ fun FirstPlayerDialog(onSelection: (Boolean) -> Unit) {
     )
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun GameEndDialog(
     gameData: GameData,
     mySymbol: String,
     onPlayAgain: () -> Unit,
     onBackToMenu: () -> Unit,
-    isMyTurn: Boolean = false
+    isMyTurn: Boolean = false,
 ) {
+    val gameRecord = GameRecord(
+    )
+    gameRecord.difficulty = "Player"
+    gameRecord.connection = "Bluetooth"
+    gameRecord.opponent = "Player"
+    gameRecord.result = if (gameData.gameState.draw) "Draw" else if (!isMyTurn) "Win" else "Lose"
+    CoroutineScope(Dispatchers.IO).launch {
+        saveGameRecord(gameRecord)
+    }
+
     AlertDialog(
         onDismissRequest = { },
         title = { Text("Game Over") },
