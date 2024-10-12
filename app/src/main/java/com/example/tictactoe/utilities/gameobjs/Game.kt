@@ -8,10 +8,9 @@ import com.example.tictactoe.utilities.enums.StatesEnum
 class Game(
     val playerX: PlayerInGame,
     val playerO: PlayerInGame,
-    val board: Board
+    var board: Board
 ) {
 
-    // List of winning conditions, representing all possible winning combinations
     val winConditions = listOf(
         listOf(0, 1, 2),
         listOf(3, 4, 5),
@@ -22,7 +21,7 @@ class Game(
         listOf(0, 4, 8),
         listOf(2, 4, 6)
     )
-    fun move(playerXmove: Boolean, playerOMove: Boolean, move: MovesEnum) {
+    fun move(playerXmove: Boolean, playerOMove: Boolean, move: MovesEnum): GameResultEnum {
         // check if only one player can move, only receive one true
         if (playerXmove and playerOMove) {
             throw Exception("Only one player can move!")
@@ -32,29 +31,29 @@ class Game(
         val moveIndex = move.index
         // check if move is available or already consumed, consumed moves cannot move again
         if (player.moveList.moves[moveIndex].state == StatesEnum.CONSUMED) {
-            return
+            return GameResultEnum.NotOver
         }
 
-        // Mark the move as consumed in the board and the player's move list
         board.availableMoves.moves[moveIndex].state = StatesEnum.CONSUMED
         player.moveList.moves[moveIndex].state = StatesEnum.CONSUMED
+
+        return checkWinner()
     }
 
     fun checkWinner(): GameResultEnum {
         // check if any player won
         val players = listOf(playerX, playerO)
-        // Loop through each player to check for winning conditions
         for (player in players) {
             for (condition in winConditions) {
                 // for each win condition check if all moves in the condition are consumed
                 if (player.moveList.moves[condition[0]].state == StatesEnum.CONSUMED &&
-                            player.moveList.moves[condition[1]].state == StatesEnum.CONSUMED &&
-                            player.moveList.moves[condition[2]].state == StatesEnum.CONSUMED)
+                    player.moveList.moves[condition[1]].state == StatesEnum.CONSUMED &&
+                    player.moveList.moves[condition[2]].state == StatesEnum.CONSUMED)
                 {
                     // check if player is X or O
                     if (player.playerType == PlayersEnum.X) {
                         // if player is X, return win
-                     return GameResultEnum.Win
+                        return GameResultEnum.Win
                     }
                     else {
                         return GameResultEnum.Lose

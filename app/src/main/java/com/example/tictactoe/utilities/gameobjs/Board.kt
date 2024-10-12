@@ -23,4 +23,19 @@ class Board() {
         )
         this.availableMoves = availableMoves
     }
+    fun resetBoard() {
+        availableMoves = MoveListData(
+            mutableListOf(
+                MoveStateData(MovesEnum.TOP_LEFT, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.TOP_CENTER, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.TOP_RIGHT, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.MIDDLE_LEFT, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.MIDDLE_CENTER, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.MIDDLE_RIGHT, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.BOTTOM_LEFT, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.BOTTOM_CENTER, StatesEnum.AVAILABLE),
+                MoveStateData(MovesEnum.BOTTOM_RIGHT, StatesEnum.AVAILABLE)
+            )
+        )
+    }
 }
