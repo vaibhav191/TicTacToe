@@ -8,19 +8,22 @@ import com.example.tictactoe.utilities.gameobjs.Board
 import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
+// Extends the abstract GameMode class
 class BluetoothPlayervsPlayer(
     playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
     playerO: PlayerInGame = PlayerInGame("Player O", PlayersEnum.O),
     board: Board = Board()
-): GameMode() {
+) : GameMode() {
     override val game = Game(playerX, playerO, board)
-    override var turn_X = true
+    override var turn_X =
+        true // To track whose turn it is, true indicates Player X's turn and false indicates Player O's turn
 
     override fun move(move: MovesEnum): GameResultEnum {
         /* To be implemented */
         return GameResultEnum.NotOver
     }
-    // bluetooth will not leverage AI move
+
+    // Bluetooth will not leverage AI move
     override fun getMoveAI(): MovesEnum? {
         return null
     }

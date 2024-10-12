@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -32,8 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,21 +78,23 @@ class GameScreenDynamicModes : ComponentActivity() {
         setContent {
             TicTacToeTheme {
                 Log.d("GameScreen", "GameScreenDynamicModes")
+                // Retrieving the difficulty and connection type
                 val difficulty = intent.getIntExtra("Difficulty", 0)
                 val connection = intent.getIntExtra("Connection", 0)
                 val difficultySlider =
-                    remember { mutableStateOf(LocalDifficultyEnum.getDifficulty(difficulty)!!) }
+                    remember { mutableStateOf(LocalDifficultyEnum.getDifficulty(difficulty)!!) } // Initialize the difficulty slider state
                 Log.d("GameScreen", "difficulty: $difficulty")
                 Log.d("GameScreen", "connection: $connection")
+                // Initializing reset state and board state
                 var reset = remember { mutableStateOf(false) }
                 val board = remember { mutableStateOf(Board()) }
                 val playerX = remember { mutableStateOf(PlayerInGame("Player X", PlayersEnum.X)) }
                 val playerO = remember { mutableStateOf(PlayerInGame("AI", PlayersEnum.O)) }
                 val turn_X = remember {
                     mutableStateOf(true)
-                }
+                } // To track whose turn it is, true indicates Player X's turn and false indicates AI's turn
                 val game =
-                    remember(reset.value, difficultySlider.value,) {
+                    remember(reset.value, difficultySlider.value) {
                         Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
                         Log.d("GameScreen", "mutable turn_X: $turn_X")
                         mutableStateOf(
@@ -110,7 +109,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                         )
                     }
                 Log.d("GameScreen", "game: $game")
-                // button states used to track which buttons are clicked
+                // Button states to track which buttons have been clicked
                 var buttonStates = remember {
                     mutableStateListOf<PlayersEnum?>(
                         null,
@@ -125,7 +124,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                     )
                 }
 
-                // first change states used to track which buttons have yet to be clicked
+                // Track whether the buttons have changed states (which buttons are yet to be clicked
                 var firstChangeStates = remember {
                     mutableStateListOf<Boolean>(
                         false,
@@ -139,7 +138,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                         false
                     )
                 }
-                // game result used to track the result of the game
+                // Game result state to track the result of the game
                 var gameResult = remember { mutableStateOf<GameResultEnum>(GameResultEnum.NotOver) }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -155,18 +154,22 @@ class GameScreenDynamicModes : ComponentActivity() {
                         reset = reset,
                         difficultySlider
                     )
-                    // show game result
+                    // State to show/hide the game result dialog
                     var showDialog = remember { mutableStateOf<Boolean>(false) }
                     var writeGameRecordFirstTime = remember { mutableStateOf<Boolean>(false) }
+                    // Check if the game has ended and display the result
                     if (gameResult.value == GameResultEnum.Win || gameResult.value == GameResultEnum.Lose || gameResult.value == GameResultEnum.Draw) {
+                        // Write game record only once after the game ends
                         if (!writeGameRecordFirstTime.value) {
                             val gameRecord = GameRecord()
                             gameRecord.difficulty =
-                                LocalDifficultyEnum.getDifficulty(difficultySlider.value.value).toString()
+                                LocalDifficultyEnum.getDifficulty(difficultySlider.value.value)
+                                    .toString()
                             gameRecord.connection =
                                 ConnectionTypeEnum.getConnectionType(connection).toString()
                             gameRecord.opponent = game.value.playerO.playerName
                             gameRecord.result = gameResult.value.toString()
+                            // Save the game record in a background coroutine
                             CoroutineScope(Dispatchers.IO).launch {
                                 saveGameRecord(gameRecord)
                             }
@@ -174,7 +177,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                         }
                         showDialog.value = true
                     }
-                    // show game 'over' dialog
+                    // Show 'Game Over' dialog
                     if (showDialog.value) {
                         AlertDialog(
                             onDismissRequest = { showDialog.value = false },
@@ -182,6 +185,7 @@ class GameScreenDynamicModes : ComponentActivity() {
                                 Text("Game Over!")
                             },
                             text = {
+                                // Display the appropriate message based on game result
                                 val message = when (gameResult.value) {
                                     GameResultEnum.Win -> {
                                         "${game.value.playerX.playerName} won!"
@@ -201,10 +205,10 @@ class GameScreenDynamicModes : ComponentActivity() {
                             },
                             confirmButton = {
                                 Button(onClick = {
-                                    showDialog.value = false
+                                    showDialog.value = false // Close dialog on button click
                                     val mainIntent = Intent(this, MainActivity::class.java)
-                                    this.startActivity(mainIntent)
-                                    (this as ComponentActivity).finish()
+                                    this.startActivity(mainIntent) // Navigate back to main activity
+                                    (this as ComponentActivity).finish() // Finish current activity
                                 }) {
                                     Text("OK")
                                 }
@@ -217,7 +221,9 @@ class GameScreenDynamicModes : ComponentActivity() {
     }
 }
 
+// Suspend function to save a game record asynchronously
 suspend fun saveGameRecord(gameRecord: GameRecord) {
+    // Switch to the IO dispatcher for performing the database operation
     withContext(Dispatchers.IO) {
         val realmManager = RealmManager(Dispatchers.IO)
         realmManager.writeGameRecord(gameRecord)
@@ -225,7 +231,7 @@ suspend fun saveGameRecord(gameRecord: GameRecord) {
     }
 }
 
-// board
+// Board
 @Composable
 fun BoardDy(
     modifier: Modifier,
@@ -503,7 +509,7 @@ fun BoardDy(
 }
 
 
-// render tile mark
+// Composable function to render a tile mark based on the player type (X or O)
 @Composable
 fun renderMarkDy(playerType: PlayersEnum, modifier: Modifier) {
     if (playerType == PlayersEnum.X) {
@@ -521,7 +527,7 @@ fun renderMarkDy(playerType: PlayersEnum, modifier: Modifier) {
     }
 }
 
-// tile button
+// Composable function that represents a tile button in the game
 @Composable
 fun tileDy(
     modifier: Modifier,
@@ -534,11 +540,14 @@ fun tileDy(
     context: Context = LocalContext.current,
     firstChangeStates: SnapshotStateList<Boolean>,
 ) {
-    var showDialog = remember { mutableStateOf<Boolean>(false) }
+    var showDialog =
+        remember { mutableStateOf<Boolean>(false) } // State to control the display of a dialog (if needed)
     Button(
         // onClick is called when the button is clicked by the user
         onClick = {
+            // Check if the button state for the tile is not already occupied
             if (buttonState[id.ordinal] == null) {
+                // Set the button state to X or O based on whose turn it is
                 if (game.value.turn_X) {
                     buttonState[id.ordinal] = PlayersEnum.X
                 } else {
@@ -554,7 +563,9 @@ fun tileDy(
     ) {
         // used by AI to render mark
         LaunchedEffect(buttonState[id.ordinal]) {
+            // Only run if the game is not over
             if (gameResult.value == GameResultEnum.NotOver) {
+                // Check if the button has been clicked and it's the first change
                 if ((buttonState[id.ordinal] != null) && (!firstChangeStates[id.ordinal])) {
                     Log.d("GameScreen", "tileDy called with id: $id")
                     Log.d("GameScreen", "buttonState is not null")
@@ -563,6 +574,7 @@ fun tileDy(
                 }
             }
         }
+        // Render the mark on the button if the game is still ongoing
         if (gameResult.value == GameResultEnum.NotOver) {
             if (buttonState[id.ordinal] != null) {
                 Log.d("GameScreen", "gameResult: ${gameResult.value}")
@@ -573,7 +585,7 @@ fun tileDy(
     }
 }
 
-// slider to show and change difficulty
+// Composable function to display and change the difficulty level using a slider
 @Composable
 fun slider(modifier: Modifier, difficulty: MutableState<LocalDifficultyEnum>) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {

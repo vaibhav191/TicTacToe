@@ -11,6 +11,7 @@ class Game(
     val board: Board
 ) {
 
+    // List of winning conditions, representing all possible winning combinations
     val winConditions = listOf(
         listOf(0, 1, 2),
         listOf(3, 4, 5),
@@ -34,6 +35,7 @@ class Game(
             return
         }
 
+        // Mark the move as consumed in the board and the player's move list
         board.availableMoves.moves[moveIndex].state = StatesEnum.CONSUMED
         player.moveList.moves[moveIndex].state = StatesEnum.CONSUMED
     }
@@ -41,6 +43,7 @@ class Game(
     fun checkWinner(): GameResultEnum {
         // check if any player won
         val players = listOf(playerX, playerO)
+        // Loop through each player to check for winning conditions
         for (player in players) {
             for (condition in winConditions) {
                 // for each win condition check if all moves in the condition are consumed

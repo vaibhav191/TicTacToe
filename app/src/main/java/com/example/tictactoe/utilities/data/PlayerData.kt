@@ -1,3 +1,5 @@
 package com.example.tictactoe.utilities.data
 
-data class PlayerData(val name: String)
+data class PlayerData(
+    val name: String
+)

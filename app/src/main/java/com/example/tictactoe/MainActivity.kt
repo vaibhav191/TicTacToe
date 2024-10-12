@@ -26,10 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -119,8 +117,8 @@ fun main(modifier: Modifier, context: Context = LocalContext.current) {
         // card for Local PlayervsPlayer
         Column(modifier = Modifier.weight(1f)) {
             Button(onClick = {
-               var difficulty = LocalDifficultyEnum.PlayervsPlayer
-               val connection = ConnectionTypeEnum.Local
+                var difficulty = LocalDifficultyEnum.PlayervsPlayer
+                val connection = ConnectionTypeEnum.Local
                 Log.d("MainActivity", "connection: $connection")
                 Log.d("MainActivity", "difficulty: $difficulty")
                 gameintent2.putExtra("Connection", connection.value)
