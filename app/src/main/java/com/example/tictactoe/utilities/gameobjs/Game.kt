@@ -5,12 +5,13 @@ import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 
+// A game consists of a board and two players
 class Game(
     val playerX: PlayerInGame,
     val playerO: PlayerInGame,
     var board: Board
 ) {
-
+// A list of win conditions
     val winConditions = listOf(
         listOf(0, 1, 2),
         listOf(3, 4, 5),
@@ -21,6 +22,8 @@ class Game(
         listOf(0, 4, 8),
         listOf(2, 4, 6)
     )
+    // A function to make a move on the board
+    // returns the game result after the move
     fun move(playerXmove: Boolean, playerOMove: Boolean, move: MovesEnum): GameResultEnum {
         // check if only one player can move, only receive one true
         if (playerXmove and playerOMove) {
@@ -39,7 +42,7 @@ class Game(
 
         return checkWinner()
     }
-
+    // function used to check if any player won and return the game result state
     fun checkWinner(): GameResultEnum {
         // check if any player won
         val players = listOf(playerX, playerO)

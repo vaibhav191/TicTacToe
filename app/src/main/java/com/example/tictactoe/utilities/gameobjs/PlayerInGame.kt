@@ -6,6 +6,7 @@ import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 
+// A player consists of a name, type, and a list of moves
 class PlayerInGame(name: String, type: PlayersEnum) {
     var moveList: MoveListData = MoveListData(mutableListOf(
         MoveStateData(MovesEnum.TOP_LEFT, StatesEnum.AVAILABLE),

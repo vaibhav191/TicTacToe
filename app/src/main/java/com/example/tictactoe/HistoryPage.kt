@@ -112,6 +112,7 @@ fun History(modifier: Modifier = Modifier) {
 
     }
 }
+// Table Cell
 @Composable
 fun RowScope.TableCell(
     text: String,

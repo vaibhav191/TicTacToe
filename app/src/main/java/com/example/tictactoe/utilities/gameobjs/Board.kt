@@ -5,6 +5,7 @@ import com.example.tictactoe.utilities.data.MoveStateData
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.StatesEnum
 
+// A board consits of 9 cells, each representing a move
 class Board() {
     var availableMoves: MoveListData
     init {

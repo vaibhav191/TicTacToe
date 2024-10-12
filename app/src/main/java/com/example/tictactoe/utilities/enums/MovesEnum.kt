@@ -1,5 +1,6 @@
 package com.example.tictactoe.utilities.enums
 
+// defines the positions on a tic-tac-toe board
 enum class MovesEnum(val row: Int, val column: Int, val index: Int) {
     TOP_LEFT(0, 0, 0),
     TOP_CENTER(0, 1, 1),

@@ -9,6 +9,7 @@ import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
 // Abstract class representing the structure of a game mode
 abstract class GameMode(
+    // constructors for the class
     open val playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
     open val playerO: PlayerInGame = PlayerInGame("Player O", PlayersEnum.O),
     val board: Board = Board(),

@@ -13,7 +13,11 @@ import com.example.tictactoe.utilities.gamemodes.MediumMode
 import com.example.tictactoe.utilities.gameobjs.Board
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
+// A game mode selector used to select a game mode based on the difficulty and connection type
 class GameModeSelector(val difficulty: LocalDifficultyEnum, val connection: ConnectionTypeEnum,
+                       // board, playerX, playerO, turn_X have been introduced as parameters for
+                       // game mode selection to allow for change difficulty in the middle of game
+                       // since the game states need to be carried over when changing difficulty
                        val board:Board = Board(),
                        val playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
                        val playerO: PlayerInGame = PlayerInGame("Player O", PlayersEnum.O),

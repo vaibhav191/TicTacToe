@@ -18,8 +18,8 @@ class BluetoothPlayervsPlayer(
     override var turn_X =
         true // To track whose turn it is, true indicates Player X's turn and false indicates Player O's turn
 
+    // Handles a move by the player
     override fun move(move: MovesEnum): GameResultEnum {
-        /* To be implemented */
         return GameResultEnum.NotOver
     }
 

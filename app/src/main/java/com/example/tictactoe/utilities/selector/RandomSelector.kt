@@ -3,6 +3,7 @@ package com.example.tictactoe.utilities.selector
 import android.util.Log
 import com.example.tictactoe.utilities.enums.MovesEnum
 
+// A random selector used to select a random move from a list of available moves
 class RandomSelector {
     companion object {
         fun select(availableMoves: List<MovesEnum>): MovesEnum {
