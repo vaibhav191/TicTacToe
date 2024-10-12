@@ -14,7 +14,7 @@ This repository contains a fully implemented Tic-Tac-Toe game for Android, devel
 - **Bluetooth Multiplayer**: Connect two devices via Bluetooth to play against another human player, with game state synchronization using JSON.
 
 ### Data Persistence
-Game results, including the winner and difficulty mode, are stored on the device using Realm. Realm provides a modern, efficient way to handle data persistence, offering features like live objects and automatic updates.
+Game results, including the winner and difficulty mode, are stored on the device using Realm.
 
 ### User Interface
 The app features a clean and intuitive UI with separate screens for gameplay, settings, and past games.
