@@ -49,12 +49,13 @@ Note:
 	- Github requires version control with each student contributing
 
 To Do:
-[ ] - Comments
+[X] - Comments
 [X] - Resetting game
 [X] - Change difficulty while game is running
 [X] - DB and records
-[ ] - Bluetooth
+[X] - Bluetooth
 [X] - Change minimax to alpha-beta pruning code (code is ready with Soham)
+[ ] - Bluetooth game needs to be recorded
 
 [ ] - Demo video
 [ ] -  add prof and TAs as collabs
