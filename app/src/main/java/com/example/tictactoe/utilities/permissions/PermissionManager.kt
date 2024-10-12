@@ -8,6 +8,8 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
+// permission manager for bluetooth
+// asks for permissions if not granted during first launch on main activity
 object PermissionManager {
     private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         arrayOf(

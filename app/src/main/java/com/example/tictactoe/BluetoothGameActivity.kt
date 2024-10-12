@@ -25,6 +25,8 @@ import com.example.tictactoe.utilities.bluetooth.GameData
 import com.example.tictactoe.utilities.enums.MovesEnum
 import kotlinx.coroutines.launch
 
+// implementation of the bluetooth game activity
+// used for playing game and defining game state over bluetooth
 class BluetoothGameActivity : ComponentActivity() {
     private lateinit var bluetoothGameManager: BluetoothGameManager
 

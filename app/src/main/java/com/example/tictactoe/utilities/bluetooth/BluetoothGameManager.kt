@@ -20,6 +20,7 @@ import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.util.*
 
+// manages the Bluetooth connection and communication between devices
 class BluetoothGameManager(private val context: Context) {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private var socket: BluetoothSocket? = null

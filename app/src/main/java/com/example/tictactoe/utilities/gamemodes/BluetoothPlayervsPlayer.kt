@@ -10,6 +10,7 @@ import com.example.tictactoe.utilities.enums.PlayersEnum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+// implementation of the game mode for Bluetooth
 class BluetoothPlayervsPlayer(private val bluetoothGameManager: BluetoothGameManager? = null) : GameMode() {
     override val playerX = PlayerInGame("Player X", PlayersEnum.X)
     override val playerO = PlayerInGame("Player O", PlayersEnum.O)

@@ -2,6 +2,8 @@ package com.example.tictactoe.utilities.bluetooth
 
 import kotlinx.serialization.Serializable
 
+// data classes for the game data, game state, and metadata, choice and minigame
+// used for playing game and defining game state over bluetooth
 @Serializable
 data class GameData(
     var gameState: GameState = GameState(),
