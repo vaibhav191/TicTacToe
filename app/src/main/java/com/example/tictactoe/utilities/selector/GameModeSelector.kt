@@ -11,15 +11,14 @@ import com.example.tictactoe.utilities.gamemodes.HardMode
 import com.example.tictactoe.utilities.gamemodes.LocalPlayervsPlayer
 import com.example.tictactoe.utilities.gamemodes.MediumMode
 import com.example.tictactoe.utilities.gameobjs.Board
-import com.example.tictactoe.utilities.gameobjs.Game
 import com.example.tictactoe.utilities.gameobjs.PlayerInGame
 
 class GameModeSelector(val difficulty: LocalDifficultyEnum, val connection: ConnectionTypeEnum,
-    val board:Board = Board(),
-    val playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
-    val playerO: PlayerInGame = PlayerInGame("Player O", PlayersEnum.O),
-    val turn_X: Boolean = true
-    ) {
+                       val board:Board = Board(),
+                       val playerX: PlayerInGame = PlayerInGame("Player X", PlayersEnum.X),
+                       val playerO: PlayerInGame = PlayerInGame("Player O", PlayersEnum.O),
+                       val turn_X: Boolean = true
+) {
     fun getGameMode(): GameMode{
         when(connection){
             ConnectionTypeEnum.Local -> {
