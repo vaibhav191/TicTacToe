@@ -55,10 +55,10 @@ To Do:
 [X] - DB and records
 [X] - Bluetooth
 [X] - Change minimax to alpha-beta pruning code (code is ready with Soham)
-[ ] - Bluetooth game needs to be recorded
+[X] - Bluetooth game needs to be recorded
 
 [ ] - Demo video
-[ ] -  add prof and TAs as collabs
+[X] -  add prof and TAs as collabs
 [ ] - team effectiveness report
 [ ] - project report (25 marks)
 [ ] - README
