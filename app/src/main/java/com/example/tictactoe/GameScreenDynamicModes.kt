@@ -494,7 +494,9 @@ fun BoardDy(
             }
         }
         Row(modifier = Modifier.fillMaxWidth()) {
-            slider(Modifier, difficulty = difficultySlider)
+            if (LocalDifficultyEnum.getDifficulty(difficulty.value) != LocalDifficultyEnum.PlayervsPlayer){
+                slider(Modifier, difficulty = difficultySlider)
+            }
         }
     }
 }
