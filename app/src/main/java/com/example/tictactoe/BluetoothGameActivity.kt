@@ -28,7 +28,6 @@ import kotlinx.coroutines.launch
 class BluetoothGameActivity : ComponentActivity() {
     private lateinit var bluetoothGameManager: BluetoothGameManager
 
-    @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bluetoothGameManager = BluetoothGameManager(this)
@@ -38,10 +37,7 @@ class BluetoothGameActivity : ComponentActivity() {
         bluetoothGameManager.setMyMacAddress(myMacAddress)
 
         setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
+            TicTacToeTheme {
                 BluetoothGameScreen(
                     bluetoothGameManager = bluetoothGameManager,
                     myMacAddress = myMacAddress,
@@ -81,109 +77,104 @@ fun BluetoothGameScreen(
             showGameEndDialog = true
         }
     }
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            when (connectionState) {
-                is BluetoothGameManager.ConnectionState.Connected -> {
-                    if (gameData.metadata.miniGame.player1Choice.isEmpty() && gameData.metadata.miniGame.player2Choice.isEmpty()) {
-                        FirstPlayerDialog(
-                            onSelection = { isMeFirst ->
-                                scope.launch {
-                                    bluetoothGameManager.sendFirstPlayerChoice(isMeFirst)
-                                }
-                            }
-                        )
-                    } else if (!showGameEndDialog) {
-                        GameBoard(
-                            gameData = gameData,
-                            myMacAddress = myMacAddress,
-                            isMyTurn = isMyTurn,
-                            onMakeMove = { move ->
-                                if (isMyTurn) {
-                                    scope.launch {
-                                        bluetoothGameManager.sendMove(move)
-                                    }
-                                }
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Button(onClick = {
-                                reset.value = true
-                            }, modifier = Modifier.size(80.dp), colors = ButtonDefaults.buttonColors(
-                                Color.Transparent)
-                            )
-                            {
-                                //Image(painter = painterResource(id = R.drawable.undo_arrow), contentDescription = null, contentScale = ContentScale.Inside)
-                            }
-                        }
-                    }
-                }
-                is BluetoothGameManager.ConnectionState.Disconnected -> {
-                    Button(
-                        onClick = {
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        when (connectionState) {
+            is BluetoothGameManager.ConnectionState.Connected -> {
+                if (gameData.metadata.miniGame.player1Choice.isEmpty() && gameData.metadata.miniGame.player2Choice.isEmpty()) {
+                    FirstPlayerDialog(
+                        onSelection = { isMeFirst ->
                             scope.launch {
-                                bluetoothGameManager.startServer()
+                                bluetoothGameManager.sendFirstPlayerChoice(isMeFirst)
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Host Game")
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = { bluetoothGameManager.startDiscovery() },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Join Game")
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LazyColumn {
-                        items(scannedDevices) { device ->
-                            DeviceListItem(device = device) {
+                        }
+                    )
+                } else if (!showGameEndDialog) {
+                    GameBoard(
+                        gameData = gameData,
+                        myMacAddress = myMacAddress,
+                        isMyTurn = isMyTurn,
+                        onMakeMove = { move ->
+                            if (isMyTurn) {
                                 scope.launch {
-                                    bluetoothGameManager.connectToDevice(device)
+                                    bluetoothGameManager.sendMove(move)
                                 }
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Button(onClick = {
+                            reset.value = true
+                        }, modifier = Modifier.size(80.dp), colors = ButtonDefaults.buttonColors(
+                            Color.Transparent)
+                        )
+                        {
+                            Image(painter = painterResource(id = R.drawable.restart), contentDescription = null, contentScale = ContentScale.Inside)
+                        }
+                    }
+                }
+            }
+            is BluetoothGameManager.ConnectionState.Disconnected -> {
+                Button(
+                    onClick = {
+                        scope.launch {
+                            bluetoothGameManager.startServer()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Host Game")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = { bluetoothGameManager.startDiscovery() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Join Game")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn {
+                    items(scannedDevices) { device ->
+                        DeviceListItem(device = device) {
+                            scope.launch {
+                                bluetoothGameManager.connectToDevice(device)
                             }
                         }
                     }
                 }
-                is BluetoothGameManager.ConnectionState.Connecting -> {
-                    CircularProgressIndicator()
-                    Text("Connecting...")
-                }
-                is BluetoothGameManager.ConnectionState.Error -> {
-                    Text("Error: ${(connectionState as BluetoothGameManager.ConnectionState.Error).message}")
-                }
             }
-
-            if (showGameEndDialog) {
-                GameEndDialog(
-                    gameData = gameData,
-                    mySymbol = if (gameData.metadata.miniGame.player1Choice == myMacAddress) "X" else "O",
-                    onPlayAgain = {
-                        bluetoothGameManager.resetGame()
-                        showGameEndDialog = false
-                        showFirstPlayerDialog = true
-                    },
-                    onBackToMenu = onBackPressed,
-                    isMyTurn = isMyTurn
-                )
+            is BluetoothGameManager.ConnectionState.Connecting -> {
+                CircularProgressIndicator()
+                Text("Connecting...")
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                onClick = onBackPressed,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Back to Main Menu")
+            is BluetoothGameManager.ConnectionState.Error -> {
+                Text("Error: ${(connectionState as BluetoothGameManager.ConnectionState.Error).message}")
             }
         }
-    }
 
+        if (showGameEndDialog) {
+            GameEndDialog(
+                gameData = gameData,
+                mySymbol = if (gameData.metadata.miniGame.player1Choice == myMacAddress) "X" else "O",
+                onPlayAgain = {
+                    bluetoothGameManager.resetGame()
+                    showGameEndDialog = false
+                    showFirstPlayerDialog = true
+                },
+                onBackToMenu = onBackPressed,
+                isMyTurn = isMyTurn
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = onBackPressed,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Back to Main Menu")
+        }
+    }
 }
 
 @Composable
