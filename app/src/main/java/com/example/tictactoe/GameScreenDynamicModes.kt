@@ -55,6 +55,7 @@ import com.example.tictactoe.utilities.enums.GameResultEnum
 import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
 import com.example.tictactoe.utilities.enums.MovesEnum
 import com.example.tictactoe.utilities.enums.PlayersEnum
+import com.example.tictactoe.utilities.enums.StatesEnum
 import com.example.tictactoe.utilities.gamemodes.EasyMode
 import com.example.tictactoe.utilities.gamemodes.HardMode
 import com.example.tictactoe.utilities.gamemodes.MediumMode
@@ -95,6 +96,23 @@ class GameScreenDynamicModes : ComponentActivity() {
                     remember(reset.value, difficultySlider.value,) {
                         Log.d("GameScreen", "game by remember difficult: ${difficultySlider.value}")
                         Log.d("GameScreen", "mutable turn_X: $turn_X")
+                        if (reset.value) {
+                            board.value.availableMoves.moves.forEach {
+                                it.state = StatesEnum.AVAILABLE
+                            }
+                            playerX.value.moveList.moves.forEach {
+                                it.state = StatesEnum.AVAILABLE
+                            }
+                            playerO.value.moveList.moves.forEach{
+                                it.state = StatesEnum.AVAILABLE
+                            }
+                            turn_X.value = true
+                            Log.d("GameScreen", "reset: ${reset.value}")
+                            Log.d("GameScreen", "mutable turn_X: ${turn_X.value}")
+                            Log.d("GameScreen", "mutable board: ${board.value.availableMoves}")
+                            Log.d("GameScreen", "mutable playerX: ${playerX.value.moveList}")
+                            Log.d("GameScreen", "mutable playerO: ${playerO.value.moveList}")
+                        }
                         mutableStateOf(
                             GameModeSelector(
                                 difficultySlider.value,
