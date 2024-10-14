@@ -40,12 +40,13 @@ import androidx.compose.ui.unit.sp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 import com.example.tictactoe.utilities.enums.ConnectionTypeEnum
 import com.example.tictactoe.utilities.enums.LocalDifficultyEnum
+import com.example.tictactoe.utilities.permissions.PermissionManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-//        PermissionManager.checkAndRequestPermissions(this)
+        PermissionManager.checkAndRequestPermissions(this)
         setContent {
             TicTacToeTheme {
                 Scaffold(

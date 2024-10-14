@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.tictactoe.ui.theme.TicTacToeTheme
 import com.example.tictactoe.utilities.bluetooth.BluetoothGameManager
@@ -200,7 +201,7 @@ fun GameBoard(
                         enabled = cell == " " && isMyTurn,
                         modifier = Modifier.size(60.dp).padding(4.dp)
                     ) {
-                        Text(cell, style = MaterialTheme.typography.headlineMedium, color = Color.Black)
+                        Text(cell, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center, color = Color.Black)
                     }
                 }
             }
