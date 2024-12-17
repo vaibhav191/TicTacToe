@@ -24,6 +24,11 @@ The app features a clean and intuitive UI with separate screens for gameplay, se
 - **Game Screen**: The main interface where the game is played, allowing users to compete against the AI or another human.
 - **Settings Screen**: Adjust game settings, including difficulty levels and multiplayer options.
 - **Records Screen**: View a history of past games, including date, winner, and difficulty mode.
+  
+  ![Home](assets/tictactoe-home.png)
+  ![Game](assets/tictactoe-gameScreen.png)
+  ![Game Over](assets/tictactoe-gameEndScreen.png)
+  ![Records](assets/tictactoe-recordsScreen.png)
 
 ## Technical Details
 
@@ -31,6 +36,10 @@ The app features a clean and intuitive UI with separate screens for gameplay, se
 - **AI Algorithm**: Implements the Minimax algorithm with alpha-beta pruning for efficient decision-making.
 - **Data Storage**: Utilizes Realm for storing game history and settings, providing a seamless and efficient data management experience.
 - **Bluetooth Connectivity**: Establishes connections between devices for multiplayer gameplay, using JSON for data exchange.
+
+## Video Demo
+
+[![Tic-Tac-Toe Game Demo](https://img.youtube.com/vi/c9tyV2-YV-M/0.jpg)](https://www.youtube.com/watch?v=c9tyV2-YV-M)
 
 ## Setup Instructions
 
