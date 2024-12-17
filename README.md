@@ -36,7 +36,7 @@ The app features a clean and intuitive UI with separate screens for gameplay, se
 
 1. **Clone the Repository**:
     ```sh
-    git clone https://github.com/vaibhav191/Project2.git
+    git clone https://github.com/vaibhav191/TicTacToe
     ```
 
 2. **Open in Android Studio**: Import the project into Android Studio.
@@ -53,4 +53,4 @@ The app features a clean and intuitive UI with separate screens for gameplay, se
 
 ## Contact
 
-For any questions or issues, please contact the project team leader [vshriva5@asu.edu](mailto:vshriva5@asu.edu).
+For any questions or issues, please contact the project team leader [vaibhavshrivastava44@gmail.com](mailto:vaibhavshrivastava44@gmail.com).
