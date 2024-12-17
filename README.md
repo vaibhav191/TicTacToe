@@ -24,11 +24,13 @@ The app features a clean and intuitive UI with separate screens for gameplay, se
 - **Game Screen**: The main interface where the game is played, allowing users to compete against the AI or another human.
 - **Settings Screen**: Adjust game settings, including difficulty levels and multiplayer options.
 - **Records Screen**: View a history of past games, including date, winner, and difficulty mode.
-  
-  ![Home](assets/tictactoe-home.png)
-  ![Game](assets/tictactoe-gameScreen.png)
-  ![Game Over](assets/tictactoe-gameEndScreen.png)
-  ![Records](assets/tictactoe-recordsScreen.png)
+
+<p float="left">
+  <img src="assets/tictactoe-home.png" width="200" />
+  <img src="assets/tictactoe-gameScreen.png" width="200" />
+  <img src="assets/tictactoe-gameEndScreen.png" width="200" />
+  <img src="assets/tictactoe-recordsScreen.png" width="200" />
+</p>
 
 ## Technical Details
 
